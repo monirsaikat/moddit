@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppTitle.Text" xml:space="preserve"><value>Modit</value></data>
+  <data name="DocumentTabs.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Open documents</value></data>
+  <data name="HomeTabHeader" xml:space="preserve"><value>Home</value></data>
+  <data name="SettingsTabHeader" xml:space="preserve"><value>Settings</value></data>
+  <data name="SettingsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Settings</value></data>
+  <data name="SettingsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Settings</value></data>
+  <data name="DropCaption" xml:space="preserve"><value>Open in Modit</value></data>
+  <data name="UpdateRestartButton.Content" xml:space="preserve"><value>Restart now</value></data>
+  <data name="UpdateReadyTitle" xml:space="preserve"><value>Modit {0} is ready to install</value></data>
+  <data name="UpdateReadyMessage" xml:space="preserve"><value>Restart to finish updating. If you keep working, the update is installed when you close Modit.</value></data>
+  <data name="WelcomeTitle.Text" xml:space="preserve"><value>Welcome to Modit</value></data>
+  <data name="WelcomeBody.Text" xml:space="preserve"><value>Modit works entirely on this PC. Your documents are never uploaded. Pick how the app should look; you can change it any time in Settings.</value></data>
+  <data name="ThemeComboBox.Header" xml:space="preserve"><value>App theme</value></data>
+  <data name="ThemeSystem.Content" xml:space="preserve"><value>Use Windows setting</value></data>
+  <data name="ThemeLight.Content" xml:space="preserve"><value>Light</value></data>
+  <data name="ThemeDark.Content" xml:space="preserve"><value>Dark</value></data>
+  <data name="WelcomeDone.Content" xml:space="preserve"><value>Get started</value></data>
+  <data name="HomeTitle.Text" xml:space="preserve"><value>Open a PDF</value></data>
+  <data name="HomeSubtitle.Text" xml:space="preserve"><value>Drop PDF files anywhere in this window, or choose them from your PC.</value></data>
+  <data name="HomeOpenButton.Content" xml:space="preserve"><value>Open file</value></data>
+  <data name="PageList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Pages</value></data>
+  <data name="EncryptedBadge.Text" xml:space="preserve"><value>Password protected</value></data>
+  <data name="DocumentStatusPages" xml:space="preserve"><value>{0} pages · PDF {1} · {2}</value></data>
+  <data name="DocumentStatusOnePage" xml:space="preserve"><value>{0} page · PDF {1} · {2}</value></data>
+  <data name="ErrorOpenTitle" xml:space="preserve"><value>This document could not be opened</value></data>
+  <data name="ErrorPdfCorrupt" xml:space="preserve"><value>The file is not a PDF or it is damaged.</value></data>
+  <data name="ErrorFileNotFound" xml:space="preserve"><value>The file no longer exists at this location.</value></data>
+  <data name="ErrorFileAccessDenied" xml:space="preserve"><value>Modit does not have permission to read this file, or another program has it locked.</value></data>
+  <data name="ErrorUnsupportedSecurity" xml:space="preserve"><value>The document uses a protection scheme that Modit does not support.</value></data>
+  <data name="ErrorEngine" xml:space="preserve"><value>The document engine stopped while opening this file. Close the tab and try again.</value></data>
+  <data name="ErrorPasswordCancelled" xml:space="preserve"><value>A password is required to open this document.</value></data>
+  <data name="PasswordPlaceholder" xml:space="preserve"><value>Password</value></data>
+  <data name="PasswordNeededMessage" xml:space="preserve"><value>This document is protected. Enter its password to open it.</value></data>
+  <data name="PasswordWrongMessage" xml:space="preserve"><value>That password is not correct. Try again.</value></data>
+  <data name="PasswordOpenButton" xml:space="preserve"><value>Open</value></data>
+  <data name="CancelButton" xml:space="preserve"><value>Cancel</value></data>
+  <data name="SettingsTitle.Text" xml:space="preserve"><value>Settings</value></data>
+  <data name="SettingsAppearanceHeader.Text" xml:space="preserve"><value>Appearance</value></data>
+  <data name="SettingsThemeLabel.Text" xml:space="preserve"><value>App theme</value></data>
+  <data name="SettingsThemeDescription.Text" xml:space="preserve"><value>Choose light or dark, or follow Windows.</value></data>
+  <data name="SettingsThemeComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>App theme</value></data>
+  <data name="SettingsUpdatesHeader.Text" xml:space="preserve"><value>Updates</value></data>
+  <data name="SettingsVersionLabel.Text" xml:space="preserve"><value>Version</value></data>
+  <data name="SettingsRestartButton.Content" xml:space="preserve"><value>Restart to update</value></data>
+  <data name="SettingsCheckButton.Content" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="SettingsChannelLabel.Text" xml:space="preserve"><value>Update channel</value></data>
+  <data name="SettingsChannelDescription.Text" xml:space="preserve"><value>Beta gets new features earlier and may be less stable.</value></data>
+  <data name="SettingsChannelComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Update channel</value></data>
+  <data name="ChannelStable.Content" xml:space="preserve"><value>Stable</value></data>
+  <data name="ChannelBeta.Content" xml:space="preserve"><value>Beta</value></data>
+  <data name="SettingsAutoCheckToggle.Header" xml:space="preserve"><value>Check for updates automatically</value></data>
+  <data name="SettingsInstallOnExitToggle.Header" xml:space="preserve"><value>Install downloaded updates when I close Modit</value></data>
+  <data name="ManagedByOrganization.Text" xml:space="preserve"><value>Some settings are managed by your organization.</value></data>
+  <data name="SettingsAboutHeader.Text" xml:space="preserve"><value>About</value></data>
+  <data name="SettingsUpdateFeedLabel.Text" xml:space="preserve"><value>Updates come from</value></data>
+  <data name="SettingsDataFolderLabel.Text" xml:space="preserve"><value>Settings and logs are stored in</value></data>
+  <data name="PortableModeLabel.Text" xml:space="preserve"><value>Portable mode: nothing is written outside this folder.</value></data>
+  <data name="SettingsOpenLogsButton.Content" xml:space="preserve"><value>Open logs folder</value></data>
+  <data name="UpdateStatusIdle" xml:space="preserve"><value>Updates have not been checked yet.</value></data>
+  <data name="UpdateStatusChecking" xml:space="preserve"><value>Checking for updates…</value></data>
+  <data name="UpdateStatusUpToDate" xml:space="preserve"><value>You have the latest version.</value></data>
+  <data name="UpdateStatusDownloading" xml:space="preserve"><value>Downloading version {0} ({1}%)…</value></data>
+  <data name="UpdateStatusReady" xml:space="preserve"><value>Version {0} is downloaded and ready to install.</value></data>
+  <data name="UpdateStatusFailed" xml:space="preserve"><value>The update check did not complete: {0}</value></data>
+  <data name="UpdateStatusPortable" xml:space="preserve"><value>This is a portable copy. Download a newer version to update it.</value></data>
+  <data name="UpdateStatusPolicy" xml:space="preserve"><value>Updates are managed by your organization.</value></data>
+  <data name="UpdateStatusNotInstalled" xml:space="preserve"><value>This copy was not installed with the Modit installer, so it does not update itself.</value></data>
+  <data name="HomeToolsHeader.Text" xml:space="preserve"><value>PDF tools</value></data>
+  <data name="ToolMergeTitle" xml:space="preserve"><value>Merge PDFs</value></data>
+  <data name="ToolMergeDescription" xml:space="preserve"><value>Combine several PDFs, or selected pages from each, into one file.</value></data>
+  <data name="ToolSplitTitle" xml:space="preserve"><value>Split PDF</value></data>
+  <data name="ToolSplitDescription" xml:space="preserve"><value>Cut one PDF into several smaller files.</value></data>
+  <data name="ToolExtractTitle" xml:space="preserve"><value>Extract pages</value></data>
+  <data name="ToolExtractDescription" xml:space="preserve"><value>Save the pages you choose as a new PDF.</value></data>
+  <data name="ToolRotateTitle" xml:space="preserve"><value>Rotate pages</value></data>
+  <data name="ToolRotateDescription" xml:space="preserve"><value>Turn all pages, or only some, and save the result.</value></data>
+  <data name="ToolProtectTitle" xml:space="preserve"><value>Protect with password</value></data>
+  <data name="ToolProtectDescription" xml:space="preserve"><value>Encrypt a PDF with AES-256 and choose what readers may do.</value></data>
+  <data name="ToolUnlockTitle" xml:space="preserve"><value>Remove password</value></data>
+  <data name="ToolUnlockDescription" xml:space="preserve"><value>Save a copy without the password. You need the current password.</value></data>
+  <data name="ToolOptimizeTitle" xml:space="preserve"><value>Reduce file size</value></data>
+  <data name="ToolOptimizeDescription" xml:space="preserve"><value>Repack the PDF more tightly without changing how it looks.</value></data>
+  <data name="ToolImagesTitle" xml:space="preserve"><value>PDF to images</value></data>
+  <data name="ToolImagesDescription" xml:space="preserve"><value>Save pages as PNG pictures at the resolution you choose.</value></data>
+  <data name="ToolFilesHeader.Text" xml:space="preserve"><value>Files</value></data>
+  <data name="ToolFilesEmpty.Text" xml:space="preserve"><value>Add a PDF here, or drop it anywhere in this window.</value></data>
+  <data name="ToolAddFiles.Content" xml:space="preserve"><value>Add PDF…</value></data>
+  <data name="ToolFilePages.PlaceholderText" xml:space="preserve"><value>All pages</value></data>
+  <data name="ToolFilePages.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Pages to take from this file</value></data>
+  <data name="ToolFilePages.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Pages to take from this file, for example 1-3,7</value></data>
+  <data name="ToolFileUp.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Move up</value></data>
+  <data name="ToolFileUp.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Move up</value></data>
+  <data name="ToolFileDown.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Move down</value></data>
+  <data name="ToolFileDown.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Move down</value></data>
+  <data name="ToolFileRemove.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Remove from list</value></data>
+  <data name="ToolFileRemove.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Remove from list</value></data>
+  <data name="ToolOptionsHeader.Text" xml:space="preserve"><value>Options</value></data>
+  <data name="ToolPages.Header" xml:space="preserve"><value>Pages</value></data>
+  <data name="ToolPages.PlaceholderText" xml:space="preserve"><value>For example 1-3,7,10-end. Leave empty for all pages.</value></data>
+  <data name="ToolPagesPerFile.Header" xml:space="preserve"><value>Pages in each file</value></data>
+  <data name="ToolAngle.Header" xml:space="preserve"><value>Turn</value></data>
+  <data name="ToolAngle90.Content" xml:space="preserve"><value>90° to the right</value></data>
+  <data name="ToolAngle180.Content" xml:space="preserve"><value>Upside down (180°)</value></data>
+  <data name="ToolAngle270.Content" xml:space="preserve"><value>90° to the left</value></data>
+  <data name="ToolUserPassword.Header" xml:space="preserve"><value>Password to open the file</value></data>
+  <data name="ToolOwnerPassword.Header" xml:space="preserve"><value>Password to change permissions (optional)</value></data>
+  <data name="ToolAllowPrinting.Content" xml:space="preserve"><value>Allow printing</value></data>
+  <data name="ToolAllowCopying.Content" xml:space="preserve"><value>Allow copying text and images</value></data>
+  <data name="ToolAllowEditing.Content" xml:space="preserve"><value>Allow editing</value></data>
+  <data name="ToolFastWebView.Content" xml:space="preserve"><value>Arrange for fast viewing on the web</value></data>
+  <data name="ToolDpi.Header" xml:space="preserve"><value>Resolution (DPI)</value></data>
+  <data name="ToolInputPassword.Header" xml:space="preserve"><value>Current password</value></data>
+  <data name="ToolInputPassword.PlaceholderText" xml:space="preserve"><value>Only if the file is protected</value></data>
+  <data name="ToolOutputHeader.Text" xml:space="preserve"><value>Save to</value></data>
+  <data name="ToolOutputPath.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Destination</value></data>
+  <data name="ToolBrowse.Content" xml:space="preserve"><value>Browse…</value></data>
+  <data name="ToolOverwrite.Content" xml:space="preserve"><value>Replace existing files</value></data>
+  <data name="CancelButtonControl.Content" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ToolResultOpen.Content" xml:space="preserve"><value>Open</value></data>
+  <data name="ToolResultDone" xml:space="preserve"><value>Done</value></data>
+  <data name="ToolResultCancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="ToolResultFailed" xml:space="preserve"><value>This did not work</value></data>
+  <data name="ToolMergeDone" xml:space="preserve"><value>{0} files merged into {1} pages.</value></data>
+  <data name="ToolFilesDone" xml:space="preserve"><value>{0} files saved.</value></data>
+  <data name="ToolPagesDone" xml:space="preserve"><value>Saved a PDF with {0} pages.</value></data>
+  <data name="ToolPagesRequired" xml:space="preserve"><value>Type the pages to extract, for example 1-3,7.</value></data>
+  <data name="ToolPagesInvalid" xml:space="preserve"><value>The page selection is not valid. Use a form like 1-3,7,10-end.</value></data>
+  <data name="ToolPasswordRequired" xml:space="preserve"><value>Type a password to protect the file with.</value></data>
+  <data name="ToolOutputRequired" xml:space="preserve"><value>Choose where to save the result.</value></data>
+  <data name="ToolProtectDone" xml:space="preserve"><value>The protected copy is saved.</value></data>
+  <data name="ToolUnlockDone" xml:space="preserve"><value>The copy without a password is saved.</value></data>
+  <data name="ToolOptimizeDone" xml:space="preserve"><value>{0} became {1}, {2:0.#}% smaller.</value></data>
+  <data name="ToolOptimizeNoGain" xml:space="preserve"><value>This file was already compact, so the copy is not smaller.</value></data>
+  <data name="ToolErrorNeedsPassword" xml:space="preserve"><value>This file is protected. Type its password under Options and try again.</value></data>
+  <data name="ToolErrorWrongPassword" xml:space="preserve"><value>That password is not correct.</value></data>
+  <data name="ToolErrorOutputExists" xml:space="preserve"><value>A file with that name already exists. Choose another name or turn on Replace existing files.</value></data>
+  <data name="ZoomOutButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Zoom out</value></data>
+  <data name="ZoomOutButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Zoom out (Ctrl+Minus)</value></data>
+  <data name="ZoomInButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Zoom in</value></data>
+  <data name="ZoomInButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Zoom in (Ctrl+Plus)</value></data>
+  <data name="ZoomFitButton.Content" xml:space="preserve"><value>Fit width</value></data>
+  <data name="ZoomResetButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Actual size</value></data>
+  <data name="ZoomResetButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Actual size (Ctrl+0)</value></data>
+</root>

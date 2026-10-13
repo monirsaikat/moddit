@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(ModitTfm)</TargetFramework>
+    <RootNamespace>Modit.Update</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Velopack" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <ProjectReference Include="..\Modit.Core\Modit.Core.csproj" />
+    <InternalsVisibleTo Include="Modit.Core.Tests" />
+  </ItemGroup>
+</Project>

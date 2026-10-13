@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(ModitTfm)</TargetFramework>
+    <RootNamespace>Modit.App.ViewModels</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <ProjectReference Include="..\Modit.Core\Modit.Core.csproj" />
+    <ProjectReference Include="..\Modit.Update\Modit.Update.csproj" />
+  </ItemGroup>
+</Project>

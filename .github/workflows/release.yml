@@ -1,0 +1,161 @@
+name: Release
+
+# The only publisher of Modit releases (docs/plan/15). Push a tag:
+#   v1.2.3          -> stable channel
+#   v1.3.0-beta.1   -> beta channel (GitHub pre-release)
+#
+# Required repository configuration:
+#   vars.RELEASES_REPO           for example modit-app/modit-releases (public)
+#   secrets.RELEASES_REPO_TOKEN  fine-grained PAT with contents:write on the releases repo
+#   vars.AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID   (OIDC, optional)
+#   vars.TRUSTED_SIGNING_ENDPOINT / _ACCOUNT / _PROFILE              (optional)
+# Without the Azure variables the release is built UNSIGNED.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - rid: win-x64
+            runner: windows-2022
+          - rid: win-arm64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      channel: ${{ steps.meta.outputs.channel }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+
+      - id: meta
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          $channel = if ($version -match "-") { "beta" } else { "stable" }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "channel=$channel" >> $env:GITHUB_OUTPUT
+
+      - name: Release notes from commits since the previous tag
+        shell: pwsh
+        run: |
+          $previous = git describe --tags --abbrev=0 "${{ github.ref_name }}^" 2>$null
+          $range = if ($previous) { "$previous..${{ github.ref_name }}" } else { "${{ github.ref_name }}" }
+          $lines = git log $range --no-merges --pretty=format:"- %s"
+          @("## Modit ${{ steps.meta.outputs.version }}", "", $lines) | Set-Content RELEASE_NOTES.md
+
+      - name: Azure login (OIDC)
+        if: vars.AZURE_CLIENT_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Trusted Signing metadata
+        if: vars.AZURE_CLIENT_ID != ''
+        shell: pwsh
+        run: |
+          @{ Endpoint = "${{ vars.TRUSTED_SIGNING_ENDPOINT }}"
+             CodeSigningAccountName = "${{ vars.TRUSTED_SIGNING_ACCOUNT }}"
+             CertificateProfileName = "${{ vars.TRUSTED_SIGNING_PROFILE }}" } |
+            ConvertTo-Json | Set-Content trusted-signing.json
+
+      - name: Download the previous release (needed to build delta packages)
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $pre = if ("${{ steps.meta.outputs.channel }}" -eq "beta") { @("--pre") } else { @() }
+          $channel = "${{ matrix.rid }}-${{ steps.meta.outputs.channel }}"
+          dotnet vpk download github --repoUrl "https://github.com/${{ vars.RELEASES_REPO }}" `
+            --channel $channel --outputDir "artifacts/releases/$channel" @pre
+
+      - name: Build and package
+        shell: pwsh
+        run: |
+          $extra = @{}
+          if (Test-Path trusted-signing.json) { $extra.AzureTrustedSignFile = (Resolve-Path trusted-signing.json).Path }
+          tools/build.ps1 -Version "${{ steps.meta.outputs.version }}" -Rid "${{ matrix.rid }}" `
+            -Channel "${{ steps.meta.outputs.channel }}" -ReleaseNotes RELEASE_NOTES.md -OutDir artifacts @extra
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.rid }}
+          path: |
+            artifacts/releases
+            artifacts/*.zip
+            artifacts/checksums.txt
+            RELEASE_NOTES.md
+
+  verify:
+    # A release that cannot install and report its version must never be published.
+    needs: build
+    runs-on: windows-2022
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-win-x64
+          path: dl
+      - name: Fresh install runs and reports the tagged version
+        shell: pwsh
+        run: |
+          $channelDir = "dl/artifacts/releases/win-x64-${{ needs.build.outputs.channel }}"
+          $setup = Get-ChildItem $channelDir -Filter "*Setup.exe" | Select-Object -First 1
+          $dir = Join-Path $env:RUNNER_TEMP "modit-fresh"
+          Start-Process $setup.FullName -ArgumentList "--silent", "--installto", "`"$dir`"" -Wait
+          $version = (& "$dir\current\modit.exe" --version).Trim()
+          if ($version -ne "${{ needs.build.outputs.version }}") { throw "Installed $version, expected ${{ needs.build.outputs.version }}" }
+          Start-Process "$dir\Update.exe" -ArgumentList "uninstall", "--silent" -Wait
+
+  publish:
+    needs: [build, verify]
+    runs-on: windows-2022
+    environment: ${{ needs.build.outputs.channel == 'stable' && 'release' || 'beta' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+      - uses: actions/download-artifact@v4
+        with:
+          path: dl
+      - name: Upload Velopack channels to the public releases repository
+        shell: pwsh
+        env:
+          TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        run: |
+          $pre = if ("${{ needs.build.outputs.channel }}" -eq "beta") { @("--pre") } else { @() }
+          foreach ($rid in "win-x64", "win-arm64") {
+            $channel = "$rid-${{ needs.build.outputs.channel }}"
+            dotnet vpk upload github --repoUrl "https://github.com/${{ vars.RELEASES_REPO }}" --token $env:TOKEN `
+              --channel $channel --outputDir "dl/release-$rid/artifacts/releases/$channel" `
+              --tag "${{ github.ref_name }}" --releaseName "Modit ${{ needs.build.outputs.version }}" --publish --merge @pre
+            if ($LASTEXITCODE -ne 0) { throw "vpk upload failed for $channel" }
+          }
+      - name: Attach portable builds, checksums and notes
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        run: |
+          $files = @(Get-ChildItem dl -Recurse -Filter "Modit-portable-*.zip" | ForEach-Object FullName)
+          foreach ($rid in "win-x64", "win-arm64") {
+            $copy = Join-Path $env:RUNNER_TEMP "checksums-$rid.txt"
+            Copy-Item "dl/release-$rid/artifacts/checksums.txt" $copy
+            $files += $copy
+          }
+          gh release upload "${{ github.ref_name }}" @files --repo "${{ vars.RELEASES_REPO }}" --clobber
+          gh release edit "${{ github.ref_name }}" --repo "${{ vars.RELEASES_REPO }}" --notes-file dl/release-win-x64/RELEASE_NOTES.md

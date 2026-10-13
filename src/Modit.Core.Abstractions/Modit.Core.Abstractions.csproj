@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(ModitTfm)</TargetFramework>
+    <IsAotCompatible>true</IsAotCompatible>
+    <RootNamespace>Modit</RootNamespace>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Modit.App.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Modit.App.Views">
+
+    <ScrollViewer Background="{ThemeResource LayerFillColorDefaultBrush}">
+        <StackPanel
+            MaxWidth="980"
+            Padding="32,28,32,48"
+            Spacing="16">
+
+            <!-- First run only: a short welcome with the one choice worth making up front. -->
+            <Border
+                x:Name="WelcomeCard"
+                Style="{StaticResource SettingsCardStyle}"
+                Visibility="Collapsed">
+                <StackPanel Spacing="12">
+                    <TextBlock x:Uid="WelcomeTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                    <TextBlock
+                        x:Uid="WelcomeBody"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox
+                            x:Name="WelcomeTheme"
+                            x:Uid="ThemeComboBox"
+                            MinWidth="200"
+                            SelectionChanged="OnWelcomeThemeChanged">
+                            <ComboBoxItem x:Uid="ThemeSystem" />
+                            <ComboBoxItem x:Uid="ThemeLight" />
+                            <ComboBoxItem x:Uid="ThemeDark" />
+                        </ComboBox>
+                        <Button
+                            x:Uid="WelcomeDone"
+                            VerticalAlignment="Bottom"
+                            Click="OnWelcomeDoneClick"
+                            Style="{ThemeResource AccentButtonStyle}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Open -->
+            <Border
+                Padding="24"
+                BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid ColumnSpacing="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon
+                        VerticalAlignment="Center"
+                        AutomationProperties.AccessibilityView="Raw"
+                        FontSize="36"
+                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        Glyph="&#xEA90;" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock x:Uid="HomeTitle" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                        <TextBlock
+                            x:Uid="HomeSubtitle"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                    <Button
+                        x:Uid="HomeOpenButton"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Click="OnOpenClick"
+                        Style="{ThemeResource AccentButtonStyle}" />
+                </Grid>
+            </Border>
+
+            <!-- Tools -->
+            <TextBlock
+                x:Uid="HomeToolsHeader"
+                Margin="0,8,0,0"
+                Style="{ThemeResource BodyStrongTextBlockStyle}" />
+            <ItemsRepeater x:Name="ToolTiles">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout
+                        ItemsStretch="Fill"
+                        MinColumnSpacing="12"
+                        MinItemHeight="96"
+                        MinItemWidth="280"
+                        MinRowSpacing="12" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="local:ToolTile">
+                        <Button
+                            Padding="16"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            AutomationProperties.Name="{x:Bind Title}"
+                            Click="OnToolTileClick"
+                            Tag="{x:Bind}">
+                            <Grid ColumnSpacing="14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon
+                                    VerticalAlignment="Top"
+                                    FontSize="24"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    Glyph="{x:Bind Glyph}" />
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Title}" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind Description}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

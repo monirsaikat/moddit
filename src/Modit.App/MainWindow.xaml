@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="Modit.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="Root" AllowDrop="True" DragOver="OnDragOver" Drop="OnDrop">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Key="O" Modifiers="Control" Invoked="OnOpenAccelerator" />
+            <KeyboardAccelerator Key="W" Modifiers="Control" Invoked="OnCloseTabAccelerator" />
+        </Grid.KeyboardAccelerators>
+
+        <!-- Tabs live in the title bar; the footer is the window drag region. -->
+        <TabView
+            x:Name="Tabs"
+            x:Uid="DocumentTabs"
+            VerticalAlignment="Stretch"
+            AddTabButtonClick="OnAddTabClick"
+            CanDragTabs="False"
+            CanReorderTabs="True"
+            IsAddTabButtonVisible="True"
+            TabCloseRequested="OnTabCloseRequested"
+            TabWidthMode="SizeToContent">
+            <TabView.TabStripHeader>
+                <StackPanel
+                    Margin="14,0,10,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Image
+                        Width="18"
+                        Height="18"
+                        AutomationProperties.AccessibilityView="Raw"
+                        Source="ms-appx:///Assets/modit-256.png" />
+                    <TextBlock
+                        x:Uid="AppTitle"
+                        VerticalAlignment="Center"
+                        Style="{ThemeResource CaptionTextBlockStyle}" />
+                </StackPanel>
+            </TabView.TabStripHeader>
+            <TabView.TabStripFooter>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        x:Name="SettingsButton"
+                        x:Uid="SettingsButton"
+                        Width="36"
+                        Height="32"
+                        Margin="4,0,0,0"
+                        Padding="0"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="OnSettingsClick">
+                        <FontIcon FontSize="16" Glyph="&#xE713;" />
+                    </Button>
+                    <Border
+                        x:Name="DragRegion"
+                        Grid.Column="1"
+                        MinWidth="188"
+                        Background="Transparent" />
+                </Grid>
+            </TabView.TabStripFooter>
+        </TabView>
+
+        <InfoBar
+            x:Name="UpdateBar"
+            Grid.Row="1"
+            IsClosable="True"
+            IsOpen="False"
+            Severity="Success">
+            <InfoBar.ActionButton>
+                <Button x:Uid="UpdateRestartButton" Click="OnRestartToUpdateClick" />
+            </InfoBar.ActionButton>
+        </InfoBar>
+    </Grid>
+</Window>

@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Cache native engines
+        uses: actions/cache@v4
+        with:
+          path: native/cache
+          key: native-${{ hashFiles('native/manifest.json') }}
+      - name: Fetch native engines (hash-pinned)
+        shell: pwsh
+        run: tools/fetch-native.ps1 -Rid win-x64,win-arm64
+      - name: Build x64 (warnings are errors)
+        run: dotnet build Modit.sln -c Release -p:Platform=x64 -nologo
+      - name: Build ARM64
+        run: dotnet build Modit.sln -c Release -p:Platform=ARM64 -nologo
+      - name: Test
+        run: dotnet test --solution Modit.sln -c Release -p:Platform=x64 --no-build
+      - name: Vulnerable packages
+        shell: pwsh
+        run: |
+          $report = dotnet list Modit.sln package --vulnerable --include-transitive 2>&1 | Out-String
+          Write-Host $report
+          if ($report -match 'has the following vulnerable packages') { exit 1 }
+
+  package-smoke:
+    needs: build-test
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+      - name: Build two consecutive versions and prove the update path
+        shell: pwsh
+        run: |
+          tools/build.ps1 -Version 0.0.1 -Package velopack -OutDir artifacts
+          Copy-Item artifacts/releases/win-x64-stable/Modit-win-x64-stable-Setup.exe artifacts/setup-old.exe
+          tools/build.ps1 -Version 0.0.2 -OutDir artifacts
+          tools/release/verify-update-path.ps1 -FromSetup artifacts/setup-old.exe -Feed artifacts/releases/win-x64-stable -FromVersion 0.0.1 -ToVersion 0.0.2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-dev-build
+          path: |
+            artifacts/releases/**/*Setup.exe
+            artifacts/*.zip
+            artifacts/checksums.txt
+          retention-days: 7

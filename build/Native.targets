@@ -1,0 +1,17 @@
+<Project>
+  <!--
+    Import from any project whose output directory must contain the pinned native engines.
+    Files land in $(OutDir)native\<rid>\ and are resolved at run time by NativeLibraryLocator.
+  -->
+  <PropertyGroup>
+    <ModitNativeDir>$(RepoRoot)native\bin\$(ModitRid)\</ModitNativeDir>
+  </PropertyGroup>
+  <Target Name="ModitCheckNative" BeforeTargets="Build">
+    <Error Condition="!Exists('$(ModitNativeDir)pdfium.dll')"
+           Text="Native engines are missing for $(ModitRid). Run: powershell -File tools/fetch-native.ps1 -Rid $(ModitRid)" />
+  </Target>
+  <ItemGroup>
+    <None Include="$(ModitNativeDir)*.dll" Link="native\$(ModitRid)\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+</Project>

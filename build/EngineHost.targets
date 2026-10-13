@@ -1,0 +1,27 @@
+<Project>
+  <!--
+    Import from any executable (App, CLI, tests) that launches Modit.Engine.Host.exe.
+    Builds the host and copies its complete output into $(OutDir)host\, keeping the host's
+    dependency closure separate from the launcher's.
+  -->
+  <PropertyGroup>
+    <ModitEngineHostProject>$(RepoRoot)src\Modit.Engine.Host\Modit.Engine.Host.csproj</ModitEngineHostProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(ModitEngineHostProject)" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+  <Target Name="ModitCopyEngineHost" AfterTargets="Build">
+    <MSBuild Projects="$(ModitEngineHostProject)" Targets="GetTargetPath"
+             Properties="Configuration=$(Configuration);Platform=$(Platform)">
+      <Output TaskParameter="TargetOutputs" ItemName="_ModitHostTarget" />
+    </MSBuild>
+    <PropertyGroup>
+      <_ModitHostDir>@(_ModitHostTarget->'%(RootDir)%(Directory)')</_ModitHostDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <_ModitHostFiles Include="$(_ModitHostDir)**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_ModitHostFiles)" DestinationFiles="@(_ModitHostFiles->'$(OutDir)host\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+</Project>

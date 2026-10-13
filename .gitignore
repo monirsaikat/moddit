@@ -1,0 +1,14 @@
+bin/
+obj/
+.vs/
+*.user
+artifacts/
+publish/
+native/bin/
+native/cache/
+TestResults/
+*.received.*
+BenchmarkDotNet.Artifacts/
+AppPackages/
+BundleArtifacts/
+*.binlog

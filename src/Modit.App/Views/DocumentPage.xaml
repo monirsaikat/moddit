@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Modit.App.Views.DocumentPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Modit.App.ViewModels">
+
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Add" Modifiers="Control" Invoked="OnZoomInAccelerator" />
+        <KeyboardAccelerator Key="Subtract" Modifiers="Control" Invoked="OnZoomOutAccelerator" />
+        <KeyboardAccelerator Key="Number0" Modifiers="Control" Invoked="OnZoomResetAccelerator" />
+        <KeyboardAccelerator Key="NumberPad0" Modifiers="Control" Invoked="OnZoomResetAccelerator" />
+    </Page.KeyboardAccelerators>
+
+    <Grid Background="{ThemeResource CanvasBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--
+            Milestone 0 page view: a virtualized list of whole-page renders with simple zoom.
+            Replaced by the tile-based DocumentCanvas (selection, search) in milestone 1.
+        -->
+        <ListView
+            x:Name="PageList"
+            x:Uid="PageList"
+            ContainerContentChanging="OnContainerContentChanging"
+            IsItemClickEnabled="False"
+            ItemsSource="{x:Bind ViewModel.Pages, Mode=OneWay}"
+            SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="Padding" Value="0,8" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="vm:PageItemViewModel">
+                    <Border
+                        AutomationProperties.Name="{x:Bind DisplayLabel}"
+                        Background="{ThemeResource PagePaperBrush}"
+                        BorderBrush="{ThemeResource PageBorderBrush}"
+                        BorderThickness="1">
+                        <Image Stretch="Fill" />
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ProgressRing
+            Width="40"
+            Height="40"
+            IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}" />
+
+        <InfoBar
+            x:Name="ErrorBar"
+            Margin="24"
+            VerticalAlignment="Top"
+            IsClosable="False"
+            IsOpen="False"
+            Severity="Error" />
+
+        <!-- Status bar -->
+        <Grid
+            Grid.Row="1"
+            Padding="12,4"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0"
+            ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                VerticalAlignment="Center"
+                Style="{ThemeResource CaptionTextBlockStyle}"
+                Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+            <StackPanel
+                Grid.Column="2"
+                Orientation="Horizontal"
+                Spacing="4">
+                <Button
+                    x:Uid="ZoomFitButton"
+                    Padding="10,4"
+                    Click="OnZoomFitClick" />
+                <Button
+                    x:Uid="ZoomOutButton"
+                    Padding="8,6"
+                    Click="OnZoomOutClick">
+                    <FontIcon FontSize="12" Glyph="&#xE738;" />
+                </Button>
+                <Button
+                    x:Name="ZoomLabel"
+                    x:Uid="ZoomResetButton"
+                    MinWidth="60"
+                    Padding="8,4"
+                    Click="OnZoomResetClick"
+                    Content="100%" />
+                <Button
+                    x:Uid="ZoomInButton"
+                    Padding="8,6"
+                    Click="OnZoomInClick">
+                    <FontIcon FontSize="12" Glyph="&#xE710;" />
+                </Button>
+            </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="6"
+                Visibility="{x:Bind ViewModel.IsEncrypted, Mode=OneWay}">
+                <FontIcon FontSize="12" Glyph="&#xE72E;" />
+                <TextBlock x:Uid="EncryptedBadge" Style="{ThemeResource CaptionTextBlockStyle}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

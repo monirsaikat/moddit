@@ -1,0 +1,48 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Deterministic>true</Deterministic>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <Platforms>x64;ARM64</Platforms>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Microsoft.VisualStudio.Threading (via StreamJsonRpc) asks for the whole WPF/WinForms desktop
+         framework on Windows TFMs; Modit uses none of it and it would add ~60 MB to every install. -->
+    <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
+    <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
+
+    <!-- Product identity (see docs/plan/13 Q1; placeholders until the owner answers). -->
+    <Product>Modit</Product>
+    <Company>Modit</Company>
+    <Copyright>Copyright © Modit</Copyright>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">dev</VersionSuffix>
+  </PropertyGroup>
+
+  <!-- Plain libraries/exes target Windows so they can use Win32/WinRT without per-project noise. -->
+  <PropertyGroup>
+    <ModitTfm>net10.0-windows10.0.19041.0</ModitTfm>
+    <ModitMinOs>10.0.17763.0</ModitMinOs>
+    <SupportedOSPlatformVersion>$(ModitMinOs)</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <!-- Map the solution Platform onto a runtime identifier for anything that loads native code. -->
+  <PropertyGroup>
+    <ModitRid Condition="'$(Platform)' == 'ARM64'">win-arm64</ModitRid>
+    <ModitRid Condition="'$(ModitRid)' == ''">win-x64</ModitRid>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Precompiling the Windows SDK projection doubles its size (25 to 53 MB) for no startup gain worth it. -->
+    <PublishReadyToRunExclude Include="Microsoft.Windows.SDK.NET.dll" />
+    <PublishReadyToRunExclude Include="WinRT.Runtime.dll" />
+  </ItemGroup>
+</Project>

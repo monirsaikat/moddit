@@ -1,0 +1,45 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,props,targets,csproj,xaml,resw,manifest}]
+indent_size = 2
+
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_using_directive_placement = outside_namespace:warning
+dotnet_sort_system_directives_first = true
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_prefer_braces = true:suggestion
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_naming_rule.private_fields.severity = suggestion
+
+# Curated once here, never per file (docs/plan/09).
+dotnet_diagnostic.CA1848.severity = suggestion   # LoggerMessage delegates: enforced in hot paths by review
+dotnet_diagnostic.CA1873.severity = suggestion
+dotnet_diagnostic.CA1707.severity = none         # underscores are used in native-mirroring identifiers
+dotnet_diagnostic.CA1711.severity = none
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1062.severity = none         # nullable reference types cover this
+dotnet_diagnostic.CA2007.severity = none         # ConfigureAwait policy is per layer (docs/plan/09)
+dotnet_diagnostic.CA1303.severity = none         # enabled for App/ViewModels via their own config when strings land
+dotnet_diagnostic.IDE0130.severity = none
+
+[tests/**.cs]
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.CA2000.severity = none
+dotnet_diagnostic.CA1515.severity = none
+dotnet_diagnostic.xUnit1051.severity = suggestion
+
+# Binding assemblies exist to expose raw P/Invokes to the engine host; nothing else references them.
+[src/Modit.Native.*/**.cs]
+dotnet_diagnostic.CA1401.severity = none
+dotnet_diagnostic.CA1051.severity = none
+dotnet_diagnostic.CA1815.severity = none
+dotnet_diagnostic.CA1720.severity = none

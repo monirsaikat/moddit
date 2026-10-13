@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="..\Shared\TestPdf.cs" Link="Shared\TestPdf.cs" />
+    <ProjectReference Include="..\..\src\Modit.Engine.Client\Modit.Engine.Client.csproj" />
+  </ItemGroup>
+  <Import Project="$(RepoRoot)build\EngineHost.targets" />
+</Project>

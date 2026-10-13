@@ -1,0 +1,50 @@
+{
+  "$comment": "Pinned third-party native binaries. tools/fetch-native.ps1 downloads, verifies SHA-256 and extracts into native/bin/<rid>/. A hash mismatch fails the build. resvg has no upstream Windows C-API binary and is built from source (see docs/adr/0002).",
+  "binaries": [
+    {
+      "name": "pdfium",
+      "version": "chromium/8100",
+      "license": "BSD-3-Clause AND Apache-2.0",
+      "source": "https://github.com/bblanchon/pdfium-binaries",
+      "archive": "tgz",
+      "rids": {
+        "win-x64": {
+          "url": "https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F8100/pdfium-win-x64.tgz",
+          "sha256": "51621bcc1d9be9ea448f4b84b0516862b928e3968d3fca899af1a6d6e2848d6d"
+        },
+        "win-arm64": {
+          "url": "https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F8100/pdfium-win-arm64.tgz",
+          "sha256": "cca9b28d406ae2a902b0b710a92ab699c4c2931564ab6efe44630014d492a9ca"
+        }
+      },
+      "files": [ "bin/pdfium.dll" ],
+      "headers": "include/*.h",
+      "licenseFiles": [ "LICENSE", "licenses/*" ]
+    },
+    {
+      "name": "qpdf",
+      "version": "12.4.2",
+      "license": "Apache-2.0",
+      "source": "https://github.com/qpdf/qpdf",
+      "archive": "zip",
+      "rids": {
+        "win-x64": {
+          "url": "https://github.com/qpdf/qpdf/releases/download/v12.4.2/qpdf-12.4.2-msvc64.zip",
+          "sha256": "db87077e683630c1217e0e8f9a20a9749d952ab676e881c3689187763a5de25d"
+        },
+        "win-arm64": {
+          "url": "https://github.com/qpdf/qpdf/releases/download/v12.4.2/qpdf-12.4.2-msvc-arm64.zip",
+          "sha256": "2b5d7740a2513d8a841116692dc2cf7efe83f35262386ebab18bed35fbf15ab1"
+        }
+      },
+      "files": [
+        "*/bin/qpdf30.dll",
+        "*/bin/msvcp140*.dll",
+        "*/bin/vcruntime140*.dll",
+        "*/bin/concrt140.dll"
+      ],
+      "headers": "*/include/qpdf/*.h",
+      "licenseFiles": []
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- WinExe: the host never shows a console window. -->
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>$(ModitTfm)</TargetFramework>
+    <RootNamespace>Modit.Engine.Host</RootNamespace>
+    <AssemblyName>Modit.Engine.Host</AssemblyName>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <TieredPGO>true</TieredPGO>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="StreamJsonRpc" />
+    <ProjectReference Include="..\Modit.Engine.Contracts\Modit.Engine.Contracts.csproj" />
+    <ProjectReference Include="..\Modit.Native.Pdfium\Modit.Native.Pdfium.csproj" />
+    <ProjectReference Include="..\Modit.Native.Qpdf\Modit.Native.Qpdf.csproj" />
+  </ItemGroup>
+  <Import Project="$(RepoRoot)build\Native.targets" />
+</Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(ModitTfm)</TargetFramework>
+    <RootNamespace>Modit.Engine</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MessagePack" />
+    <ProjectReference Include="..\Modit.Core.Abstractions\Modit.Core.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

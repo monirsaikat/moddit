@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(ModitTfm)</TargetFramework>
+    <IsAotCompatible>true</IsAotCompatible>
+    <RootNamespace>Modit.Native.Qpdf</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\NativeLibraryLocator.cs" Link="Shared\NativeLibraryLocator.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(ModitTfm)</TargetFramework>
+    <RootNamespace>Modit.Engine.Client</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="StreamJsonRpc" />
+    <ProjectReference Include="..\Modit.Engine.Contracts\Modit.Engine.Contracts.csproj" />
+  </ItemGroup>
+</Project>
