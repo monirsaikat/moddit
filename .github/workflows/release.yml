@@ -5,7 +5,7 @@ name: Release
 #   v1.3.0-beta.1   -> beta channel (GitHub pre-release)
 #
 # Required repository configuration:
-#   vars.RELEASES_REPO           for example modit-app/modit-releases (public)
+#   vars.RELEASES_REPO           monirsaikat/modit-releases (public)
 #   secrets.RELEASES_REPO_TOKEN  fine-grained PAT with contents:write on the releases repo
 #   vars.AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID   (OIDC, optional)
 #   vars.TRUSTED_SIGNING_ENDPOINT / _ACCOUNT / _PROFILE              (optional)

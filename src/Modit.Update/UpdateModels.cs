@@ -67,7 +67,7 @@ public interface IUpdateService
 public static class UpdateDefaults
 {
     /// <summary>Public repository whose GitHub Releases carry installers and update packages (docs/plan/13 Q16).</summary>
-    public const string ReleasesRepositoryUrl = "https://github.com/modit-app/modit-releases";
+    public const string ReleasesRepositoryUrl = "https://github.com/monirsaikat/modit-releases";
 
     /// <summary>Overrides the feed with a folder or URL; used by tests and by tools/release/local-feed.ps1.</summary>
     public const string FeedEnvironmentVariable = "MODIT_UPDATE_FEED";
