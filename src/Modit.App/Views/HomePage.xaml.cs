@@ -20,6 +20,7 @@ public sealed partial class HomePage : Page
         IStringProvider strings = App.Services.GetRequiredService<IStringProvider>();
 
         ToolTile Tile(ToolKind k) => new(k, ToolCatalog.Glyph(k), strings.Get($"Tool{k}Title"), strings.Get($"Tool{k}Description"));
+        EditTiles.ItemsSource = ToolCatalog.EditTools.Select(Tile).ToList();
         ToolTiles.ItemsSource = ToolCatalog.PdfTools.Select(Tile).ToList();
         ConvertTiles.ItemsSource = ToolCatalog.ConvertTools.Select(Tile).ToList();
 

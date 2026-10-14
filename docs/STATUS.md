@@ -18,7 +18,7 @@ Updated: 2026-10-13. One line per playbook task (docs/plan/12). "Verified" means
 | M0.10 Release pipeline + updater | Done locally | `tools/build.ps1` + `tools/release/verify-update-path.ps1`: silent install, self-update 0.1.0 → 0.1.1 by delta, relaunch, clean uninstall. **GitHub workflows are written but have never run**: no repository, token or signing account exists yet |
 | M0.11 First run and install polish | Partial | Welcome card, "Open with" registration and residue-free uninstall are done and verified. Repair, reset settings, prerequisite checks and What's New are not |
 
-Tests: 100 passing (`dotnet test --solution Modit.sln`).
+Tests: 116 passing (`dotnet test --solution Modit.sln`).
 
 ## Version 0.2.0: PDF tools pulled forward from milestone 2
 
@@ -51,6 +51,18 @@ from `PdfService`, and no automated UI tests.
 Deviations: `docs/adr/0003-image-conversion-deviations.md` (SVG via librsvg instead of resvg needs owner approval).
 Not done: converter registry and options schema (M3.1), SVG to vector PDF, JPEG XL/PSD/TGA, queue tab, Explorer
 context menu.
+
+## Version 0.4.0: page editing pulled forward from milestone 4
+
+| Piece | State | Evidence |
+|---|---|---|
+| Organize pages editor | Done | Thumbnail grid: drag to reorder, rotate, duplicate, delete, blank pages, pages from other PDFs, undo, Save as. `OrganizeViewModelTests`; buttons driven by UI automation |
+| Watermark, page numbers and headers, image or signature stamp | Done | PDFium editing in the host, placed on the page as seen (rotation aware). `PdfEditTests` check text and rendered pixel positions |
+| Crop, flatten, remove pages, PDF to text | Done | `PdfEditTests` |
+| CLI | Done | `modit pdf organize|remove-pages|watermark|page-numbers|add-image|crop|flatten|to-text`, chained by hand on fixtures and rendered |
+| App | Done | Home has an "Edit pages" section; the PDF viewer has a Tools menu that opens any tool with the open file |
+
+Details and limits: `docs/adr/0004-page-editing-tools.md`.
 
 ## What the owner must provide before a real release
 

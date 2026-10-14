@@ -158,6 +158,9 @@ public sealed class EngineClient : IAsyncDisposable
     public Task<ImagesToPdfResult> ImagesToPdfAsync(ImagesToPdfRequest request, CancellationToken cancellationToken = default) =>
         InvokeAsync((service, ct) => service.ImagesToPdfAsync(request, ct), cancellationToken);
 
+    public Task<PdfEditResult> EditPdfAsync(PdfEditRequest request, CancellationToken cancellationToken = default) =>
+        InvokeAsync((service, ct) => service.EditPdfAsync(request, ct), cancellationToken);
+
     /// <summary>Test hook: kills the current host abruptly. The next call restarts it.</summary>
     public async Task CrashHostForTestingAsync()
     {

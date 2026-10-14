@@ -95,12 +95,26 @@ public sealed partial class ToolPage : Page
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
             SuggestedFileName = Path.GetFileNameWithoutExtension(ViewModel.SuggestedFileName),
-            DefaultFileExtension = ".pdf",
+            DefaultFileExtension = ViewModel.OutputExtension,
         };
-        savePicker.FileTypeChoices.Add("PDF", [".pdf"]);
+        savePicker.FileTypeChoices.Add(ViewModel.OutputExtension == ".txt" ? "Text" : "PDF", [ViewModel.OutputExtension]);
         if (await savePicker.PickSaveFileAsync() is { } file)
         {
             ViewModel.SetOutputFromPicker(file.Path, replaceConfirmedByDialog: true);
+        }
+    }
+
+    private async void OnBrowseImageClick(object sender, RoutedEventArgs e)
+    {
+        var picker = new FileOpenPicker(App.MainWindow.AppWindow.Id) { ViewMode = PickerViewMode.Thumbnail };
+        foreach (string extension in ImageFormats.InputExtensions)
+        {
+            picker.FileTypeFilter.Add(extension);
+        }
+
+        if (await picker.PickSingleFileAsync() is { } file)
+        {
+            ViewModel.StampImagePath = file.Path;
         }
     }
 

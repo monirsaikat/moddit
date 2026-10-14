@@ -31,6 +31,9 @@ public interface IEngineService
     /// <summary>Writes a PDF with one image per page. JPEG files are embedded unchanged.</summary>
     Task<ImagesToPdfResult> ImagesToPdfAsync(ImagesToPdfRequest request, CancellationToken cancellationToken);
 
+    /// <summary>Stamps, crops or flattens pages with PDFium and saves a full copy.</summary>
+    Task<PdfEditResult> EditPdfAsync(PdfEditRequest request, CancellationToken cancellationToken);
+
     /// <summary>Test hook: terminates the host abruptly to exercise crash recovery.</summary>
     Task CrashAsync(CancellationToken cancellationToken);
 }

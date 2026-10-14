@@ -11,7 +11,7 @@ namespace Modit.Engine.Host.Engines;
 /// Owns the PDFium library and all open documents of this host. Public methods marshal onto the
 /// PDFium thread; private methods assume they already run there.
 /// </summary>
-internal sealed unsafe class PdfiumEngine : IDisposable
+internal sealed unsafe partial class PdfiumEngine : IDisposable
 {
     /// <summary>Largest edge of a single render request, in device pixels.</summary>
     public const int MaxRenderEdgePx = 16384;

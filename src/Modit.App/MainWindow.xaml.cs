@@ -110,6 +110,48 @@ public sealed partial class MainWindow : Window
         return toolPage;
     }
 
+    /// <summary>Opens the Organize editor for the given PDFs, or asks for one when <paramref name="files"/> is null.</summary>
+    public async Task OpenOrganizerAsync(IReadOnlyList<string>? files)
+    {
+        if (files is null)
+        {
+            var picker = new FileOpenPicker(AppWindow.Id) { ViewMode = PickerViewMode.List };
+            picker.FileTypeFilter.Add(".pdf");
+            IReadOnlyList<PickFileResult> picked = await picker.PickMultipleFilesAsync();
+            files = [.. picked.Select(p => p.Path)];
+        }
+
+        if (files.Count == 0)
+        {
+            return;
+        }
+
+        var viewModel = new OrganizeViewModel(
+            App.Services.GetRequiredService<EngineClient>(), App.Services.GetRequiredService<PdfService>(), _strings);
+        var tab = new TabViewItem
+        {
+            Header = _strings.Format("OrganizeTabHeader", Path.GetFileName(files[0])),
+            IconSource = new FontIconSource { Glyph = ToolCatalog.Glyph(ToolKind.Organize) },
+            Content = new OrganizerPage(viewModel, files),
+        };
+        ToolTipService.SetToolTip(tab, files[0]);
+        Tabs.TabItems.Add(tab);
+        Tabs.SelectedItem = tab;
+    }
+
+    /// <summary>Opens a tool (or the Organize editor) with one document as its input.</summary>
+    public async Task OpenToolWithFileAsync(ToolKind kind, string path)
+    {
+        if (kind == ToolKind.Organize)
+        {
+            await OpenOrganizerAsync([path]);
+        }
+        else
+        {
+            OpenTool(kind).ViewModel.AddFiles([path]);
+        }
+    }
+
     public void BringToFront()
     {
         if (AppWindow.Presenter is OverlappedPresenter { State: OverlappedPresenterState.Minimized } presenter)
@@ -124,7 +166,17 @@ public sealed partial class MainWindow : Window
     {
         var home = new HomePage();
         home.OpenRequested += async (_, _) => await PickAndOpenAsync();
-        home.ToolRequested += (_, kind) => OpenTool(kind);
+        home.ToolRequested += async (_, kind) =>
+        {
+            if (kind == ToolKind.Organize)
+            {
+                await OpenOrganizerAsync(null);
+            }
+            else
+            {
+                OpenTool(kind);
+            }
+        };
         Tabs.TabItems.Add(new TabViewItem
         {
             Header = _strings.Get("HomeTabHeader"),
@@ -170,7 +222,18 @@ public sealed partial class MainWindow : Window
 
     private async Task CloseTabAsync(TabViewItem tab)
     {
+        if (tab.Content is OrganizerPage { ViewModel.IsDirty: true } unsaved &&
+            !await UserPrompts.ConfirmDiscardAsync(unsaved.XamlRoot, unsaved.ViewModel.Title, _strings))
+        {
+            return;
+        }
+
         Tabs.TabItems.Remove(tab);
+        if (tab.Content is OrganizerPage organizer)
+        {
+            await organizer.ViewModel.DisposeAsync();
+        }
+
         if (ReferenceEquals(tab, _settingsTab))
         {
             (tab.Content as SettingsPage)?.ViewModel.Dispose();
@@ -230,6 +293,12 @@ public sealed partial class MainWindow : Window
         if (Tabs.SelectedItem is TabViewItem { Content: ToolPage toolPage })
         {
             toolPage.ViewModel.AddFiles(paths);
+            return;
+        }
+
+        if (Tabs.SelectedItem is TabViewItem { Content: OrganizerPage organizer })
+        {
+            await organizer.AddFilesAsync(pdfs);
             return;
         }
 

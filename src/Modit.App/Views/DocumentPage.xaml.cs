@@ -40,6 +40,29 @@ public sealed partial class DocumentPage : Page
 
         // handledEventsToo: the list's ScrollViewer marks wheel input handled before it bubbles here.
         PageList.AddHandler(PointerWheelChangedEvent, new PointerEventHandler(OnPointerWheel), handledEventsToo: true);
+        ToolsButton.Flyout = BuildToolsMenu();
+    }
+
+    /// <summary>Every tool that works on one PDF, opened with this document as its input.</summary>
+    private MenuFlyout BuildToolsMenu()
+    {
+        var menu = new MenuFlyout { Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.TopEdgeAlignedRight };
+        foreach (ToolKind kind in ToolCatalog.DocumentTools)
+        {
+            var item = new MenuFlyoutItem
+            {
+                Text = _strings.Get($"Tool{kind}Title"),
+                Icon = new FontIcon { Glyph = ToolCatalog.Glyph(kind) },
+            };
+            item.Click += async (_, _) => await App.MainWindow.OpenToolWithFileAsync(kind, ViewModel.FilePath);
+            menu.Items.Add(item);
+            if (kind == ToolKind.Rotate)
+            {
+                menu.Items.Add(new MenuFlyoutSeparator());
+            }
+        }
+
+        return menu;
     }
 
     public DocumentViewModel ViewModel { get; }

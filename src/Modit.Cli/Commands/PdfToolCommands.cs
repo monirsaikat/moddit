@@ -24,6 +24,7 @@ internal static partial class PdfCommands
         pdf.Subcommands.Add(Optimize());
         pdf.Subcommands.Add(Images());
         pdf.Subcommands.Add(ConvertCommands.FromImages());
+        AddEditTools(pdf);
     }
 
     private static Command Split()

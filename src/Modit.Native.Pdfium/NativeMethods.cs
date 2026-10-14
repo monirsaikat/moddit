@@ -109,6 +109,76 @@ public static unsafe partial class NativeMethods
 
     [LibraryImport(Lib)]
     public static partial int FPDFText_GetText(IntPtr textPage, int startIndex, int count, ushort* result);
+
+    // ---- Editing (fpdf_edit.h, fpdf_flatten.h, fpdf_save.h, fpdf_transformpage.h) ----
+
+    [LibraryImport(Lib)]
+    public static partial IntPtr FPDFText_LoadStandardFont(IntPtr document, byte* font);
+
+    [LibraryImport(Lib)]
+    public static partial IntPtr FPDFText_LoadFont(IntPtr document, byte* data, uint size, int fontType, int cid);
+
+    [LibraryImport(Lib)]
+    public static partial void FPDFFont_Close(IntPtr font);
+
+    [LibraryImport(Lib)]
+    public static partial IntPtr FPDFPageObj_CreateTextObj(IntPtr document, IntPtr font, float fontSize);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFText_SetText(IntPtr textObject, ushort* text);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFPageObj_SetFillColor(IntPtr pageObject, uint r, uint g, uint b, uint a);
+
+    [LibraryImport(Lib)]
+    public static partial void FPDFPageObj_Transform(IntPtr pageObject, double a, double b, double c, double d, double e, double f);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFPageObj_GetBounds(IntPtr pageObject, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport(Lib)]
+    public static partial void FPDFPageObj_Destroy(IntPtr pageObject);
+
+    [LibraryImport(Lib)]
+    public static partial IntPtr FPDFPageObj_NewImageObj(IntPtr document);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFImageObj_SetBitmap(IntPtr* pages, int count, IntPtr imageObject, IntPtr bitmap);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFImageObj_SetMatrix(IntPtr imageObject, double a, double b, double c, double d, double e, double f);
+
+    [LibraryImport(Lib)]
+    public static partial void FPDFPage_InsertObject(IntPtr page, IntPtr pageObject);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFPage_GenerateContent(IntPtr page);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFPage_GetRotation(IntPtr page);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFPage_Flatten(IntPtr page, int flag);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFPage_GetCropBox(IntPtr page, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDFPage_GetMediaBox(IntPtr page, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport(Lib)]
+    public static partial void FPDFPage_SetCropBox(IntPtr page, float left, float bottom, float right, float top);
+
+    [LibraryImport(Lib)]
+    public static partial int FPDF_SaveAsCopy(IntPtr document, FPDF_FILEWRITE* fileWrite, uint flags);
+}
+
+/// <summary>Write callback for <see cref="NativeMethods.FPDF_SaveAsCopy"/>; <c>unsigned long</c> is 32-bit on Windows.</summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct FPDF_FILEWRITE
+{
+    public int Version;
+    public delegate* unmanaged[Cdecl]<FPDF_FILEWRITE*, void*, uint, int> WriteBlock;
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -168,4 +238,13 @@ public static class PdfiumConstants
     public const int BitmapBgr = 2;
     public const int BitmapBgrx = 3;
     public const int BitmapBgra = 4;
+
+    public const int FontTrueType = 2;
+
+    public const int FlattenForPrint = 1;
+    public const int FlattenFail = 0;
+
+    public const uint SaveNoIncremental = 1 << 1;
+    public const uint SaveRemoveSecurity = 1 << 2;
+    public const uint SaveSubsetNewFonts = 1 << 3;
 }

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Modit.App.Views.OrganizerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Modit.App.Views"
+    xmlns:vm="using:Modit.App.ViewModels">
+
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Delete" Invoked="OnDeleteAccelerator" />
+        <KeyboardAccelerator Key="Z" Modifiers="Control" Invoked="OnUndoAccelerator" />
+        <KeyboardAccelerator Key="S" Modifiers="Control" Invoked="OnSaveAccelerator" />
+        <KeyboardAccelerator Key="R" Modifiers="Control" Invoked="OnRotateRightAccelerator" />
+        <KeyboardAccelerator Key="R" Modifiers="Control,Shift" Invoked="OnRotateLeftAccelerator" />
+    </Page.KeyboardAccelerators>
+
+    <Grid Background="{ThemeResource CanvasBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Grid
+            Padding="8,4,16,4"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+            BorderThickness="0,0,0,1"
+            ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <CommandBar
+                HorizontalAlignment="Left"
+                Background="Transparent"
+                DefaultLabelPosition="Right"
+                IsDynamicOverflowEnabled="True">
+                <AppBarButton x:Uid="OrganizeAddPdf" Click="OnAddPdfClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE8A5;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="OrganizeInsertBlank" Click="OnInsertBlankClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE7C3;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarSeparator />
+                <AppBarButton x:Uid="OrganizeRotateLeft" Click="OnRotateLeftClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE7AD;" RenderTransformOrigin="0.5,0.5">
+                            <FontIcon.RenderTransform>
+                                <ScaleTransform ScaleX="-1" />
+                            </FontIcon.RenderTransform>
+                        </FontIcon>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="OrganizeRotateRight" Click="OnRotateRightClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE7AD;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="OrganizeMoveEarlier" Click="OnMoveEarlierClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE76B;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="OrganizeMoveLater" Click="OnMoveLaterClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE76C;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="OrganizeDuplicate" Click="OnDuplicateClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE8C8;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="OrganizeDelete" Click="OnDeleteClick">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE74D;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarSeparator />
+                <AppBarButton
+                    x:Uid="OrganizeUndo"
+                    Click="OnUndoClick"
+                    IsEnabled="{x:Bind ViewModel.CanUndo, Mode=OneWay}">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE7A7;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </CommandBar>
+            <Button
+                x:Name="SaveButton"
+                x:Uid="OrganizeSave"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Click="OnSaveClick"
+                Style="{ThemeResource AccentButtonStyle}" />
+        </Grid>
+
+        <!-- Pages -->
+        <GridView
+            x:Name="PageGrid"
+            x:Uid="OrganizeGrid"
+            Grid.Row="1"
+            Padding="16,12"
+            AllowDrop="True"
+            CanDragItems="True"
+            CanReorderItems="True"
+            ContainerContentChanging="OnContainerContentChanging"
+            DragItemsStarting="OnDragItemsStarting"
+            ItemsSource="{x:Bind ViewModel.Pages}"
+            SelectionMode="Extended">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="vm:OrganizePageItem">
+                    <StackPanel
+                        Width="168"
+                        Padding="4"
+                        AutomationProperties.Name="{x:Bind Label}"
+                        Spacing="6">
+                        <Grid Width="156" Height="156">
+                            <Border
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="{ThemeResource PagePaperBrush}"
+                                BorderBrush="{ThemeResource PageBorderBrush}"
+                                BorderThickness="1"
+                                RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <RotateTransform Angle="{x:Bind local:OrganizerPage.Angle(Rotation), Mode=OneWay}" />
+                                </Border.RenderTransform>
+                                <Image Stretch="Fill" />
+                            </Border>
+                        </Grid>
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{ThemeResource CaptionTextBlockStyle}"
+                            Text="{x:Bind Label}" />
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
+        <ProgressRing
+            x:Name="Busy"
+            Grid.Row="1"
+            Width="40"
+            Height="40"
+            IsActive="False" />
+
+        <!-- Status and result -->
+        <StackPanel Grid.Row="2">
+            <InfoBar
+                x:Name="ResultBar"
+                Margin="16,0,16,8"
+                IsClosable="True">
+                <InfoBar.ActionButton>
+                    <Button
+                        x:Name="ResultOpenButton"
+                        x:Uid="ToolResultOpen"
+                        Click="OnOpenResultClick" />
+                </InfoBar.ActionButton>
+            </InfoBar>
+            <Grid
+                Padding="12,6"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Style="{ThemeResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+                <TextBlock
+                    x:Uid="OrganizeHint"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{ThemeResource CaptionTextBlockStyle}" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Page>

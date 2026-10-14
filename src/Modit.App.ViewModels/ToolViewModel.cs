@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Modit.Core.Convert;
 using Modit.Core.Pdf;
+using Modit.Engine;
 
 namespace Modit.App.ViewModels;
 
@@ -19,6 +20,14 @@ public enum ToolKind
     Images,
     ConvertImages,
     ImagesToPdf,
+    Organize,
+    Watermark,
+    PageNumbers,
+    AddImage,
+    Crop,
+    Flatten,
+    RemovePages,
+    ToText,
 }
 
 /// <summary>One input file of a tool, with the optional page selection used by Merge.</summary>
@@ -60,6 +69,24 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
         Title = strings.Get($"Tool{kind}Title");
         Description = strings.Get($"Tool{kind}Description");
         AddFilesLabel = strings.Get(AcceptsImages ? "ToolAddImages" : "ToolAddPdf");
+        PagesHeader = strings.Get(kind == ToolKind.RemovePages ? "ToolPagesToRemove" : "ToolPagesHeader");
+        switch (kind)
+        {
+            case ToolKind.Watermark:
+                PositionIndex = StampPositions.All.ToList().IndexOf("center");
+                StampFontSize = 60;
+                break;
+            case ToolKind.PageNumbers:
+                PositionIndex = StampPositions.All.ToList().IndexOf("bottom-center");
+                StampFontSize = 11;
+                MarginMm = 10;
+                break;
+            case ToolKind.AddImage:
+                PositionIndex = StampPositions.All.ToList().IndexOf("bottom-right");
+                MarginMm = 15;
+                break;
+        }
+
         EmptyFilesText = strings.Get(AcceptsImages ? "ToolFilesEmptyImages" : "ToolFilesEmptyPdf");
         Files.CollectionChanged += (_, _) =>
         {
@@ -112,7 +139,29 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
 
     public bool ShowPerFilePages => Kind == ToolKind.Merge;
 
-    public bool ShowPages => Kind is ToolKind.Extract or ToolKind.Rotate or ToolKind.Images;
+    public bool ShowPages => Kind is ToolKind.Extract or ToolKind.Rotate or ToolKind.Images or ToolKind.Watermark
+        or ToolKind.PageNumbers or ToolKind.AddImage or ToolKind.Crop or ToolKind.RemovePages or ToolKind.ToText;
+
+    /// <summary>Header of the page selection box: "Pages", or "Pages to remove".</summary>
+    public string PagesHeader { get; }
+
+    public bool ShowWatermark => Kind == ToolKind.Watermark;
+
+    public bool ShowPageNumbers => Kind == ToolKind.PageNumbers;
+
+    public bool ShowStampImage => Kind == ToolKind.AddImage;
+
+    /// <summary>Position and margin, shared by the three stamp tools.</summary>
+    public bool ShowStampLayout => Kind is ToolKind.Watermark or ToolKind.PageNumbers or ToolKind.AddImage;
+
+    public bool ShowStampMargin => Kind is ToolKind.PageNumbers or ToolKind.AddImage;
+
+    public bool ShowFontSize => Kind is ToolKind.Watermark or ToolKind.PageNumbers;
+
+    public bool ShowCrop => Kind == ToolKind.Crop;
+
+    /// <summary>File extension of the result when it is a single file.</summary>
+    public string OutputExtension => Kind == ToolKind.ToText ? ".txt" : ".pdf";
 
     public bool ShowPagesPerFile => Kind == ToolKind.Split;
 
@@ -198,6 +247,51 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     public partial double MarginMm { get; set; }
+
+    [ObservableProperty]
+    public partial string WatermarkText { get; set; } = "CONFIDENTIAL";
+
+    /// <summary>Percent, 0 to 100.</summary>
+    [ObservableProperty]
+    public partial double StampOpacity { get; set; } = 25;
+
+    [ObservableProperty]
+    public partial double StampAngle { get; set; } = 45;
+
+    /// <summary>0 gray, 1 red, 2 blue, 3 black.</summary>
+    [ObservableProperty]
+    public partial int StampColorIndex { get; set; }
+
+    [ObservableProperty]
+    public partial double StampFontSize { get; set; } = 12;
+
+    /// <summary>Index into <see cref="StampPositions.All"/>.</summary>
+    [ObservableProperty]
+    public partial int PositionIndex { get; set; }
+
+    [ObservableProperty]
+    public partial string NumberFormat { get; set; } = "{page} / {pages}";
+
+    [ObservableProperty]
+    public partial double StartNumber { get; set; } = 1;
+
+    [ObservableProperty]
+    public partial string StampImagePath { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial double ImageWidthMm { get; set; } = 40;
+
+    [ObservableProperty]
+    public partial double CropTopMm { get; set; }
+
+    [ObservableProperty]
+    public partial double CropRightMm { get; set; }
+
+    [ObservableProperty]
+    public partial double CropBottomMm { get; set; }
+
+    [ObservableProperty]
+    public partial double CropLeftMm { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
@@ -416,6 +510,73 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
             case ToolKind.ConvertImages:
                 return await ConvertImagesAsync(ct).ConfigureAwait(true);
 
+            case ToolKind.Watermark:
+            {
+                string[] colors = ["#808080", "#C42B1C", "#1B66C9", "#000000"];
+                var stamp = new PdfTextStamp(
+                    WatermarkText, Whole(StampFontSize), colors[Math.Clamp(StampColorIndex, 0, colors.Length - 1)],
+                    Math.Clamp(double.IsNaN(StampOpacity) ? 25 : StampOpacity, 0, 100) / 100, double.IsNaN(StampAngle) ? 0 : StampAngle,
+                    SelectedPosition, Points(10), 1, string.Empty, Bold: true);
+                return await EditAsync(source, new PdfEditOptions { Text = stamp, Pages = pages }, password, options, ct)
+                    .ConfigureAwait(true);
+            }
+
+            case ToolKind.PageNumbers:
+            {
+                var stamp = new PdfTextStamp(
+                    NumberFormat, Whole(StampFontSize), "#000000", 1, 0, SelectedPosition, Points(MarginMm),
+                    Math.Max(0, Whole(StartNumber)), string.Empty, Bold: false);
+                return await EditAsync(source, new PdfEditOptions { Text = stamp, Pages = pages }, password, options, ct)
+                    .ConfigureAwait(true);
+            }
+
+            case ToolKind.AddImage:
+            {
+                if (string.IsNullOrWhiteSpace(StampImagePath))
+                {
+                    throw new ModitException(ErrorCode.InvalidArgument, _strings.Get("ToolImageRequired"));
+                }
+
+                var stamp = new PdfImageStamp(StampImagePath, Math.Max(1, Points(ImageWidthMm)), SelectedPosition, Points(MarginMm));
+                return await EditAsync(source, new PdfEditOptions { Image = stamp, Pages = pages }, password, options, ct)
+                    .ConfigureAwait(true);
+            }
+
+            case ToolKind.Crop:
+            {
+                var crop = new PdfCrop(Points(CropLeftMm), Points(CropTopMm), Points(CropRightMm), Points(CropBottomMm));
+                if (crop is { LeftPt: 0, TopPt: 0, RightPt: 0, BottomPt: 0 })
+                {
+                    throw new ModitException(ErrorCode.InvalidArgument, _strings.Get("ToolCropRequired"));
+                }
+
+                return await EditAsync(source, new PdfEditOptions { Crop = crop, Pages = pages }, password, options, ct)
+                    .ConfigureAwait(true);
+            }
+
+            case ToolKind.Flatten:
+                return await EditAsync(source, new PdfEditOptions { Flatten = true }, password, options, ct).ConfigureAwait(true);
+
+            case ToolKind.RemovePages:
+            {
+                if (pages is null)
+                {
+                    throw new ModitException(ErrorCode.InvalidArgument, _strings.Get("ToolRemoveRequired"));
+                }
+
+                PdfOperationResult result = await _service.RemovePagesAsync(source, pages, OutputPath, password, options, ct)
+                    .ConfigureAwait(true);
+                return (result.OutputPath, _strings.Format("ToolPagesDone", result.PageCount));
+            }
+
+            case ToolKind.ToText:
+            {
+                PdfOperationResult result = await _service.ExportTextAsync(source, OutputPath, pages, password, options, ct)
+                    .ConfigureAwait(true);
+                string message = _strings.Format("ToolTextDone", result.PageCount);
+                return (result.OutputPath, result.Warnings.Count > 0 ? $"{message} {result.Warnings[0]}" : message);
+            }
+
             case ToolKind.ImagesToPdf:
             {
                 var layout = new ImagesToPdfOptions
@@ -472,6 +633,24 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
             ? batch.Items.First(i => i.Status == ConvertItemStatus.Converted).Output!
             : OutputPath;
         return (resultPath, message);
+    }
+
+    private string SelectedPosition => StampPositions.All[Math.Clamp(PositionIndex, 0, StampPositions.All.Count - 1)];
+
+    /// <summary>Millimetres (as typed) to PDF points.</summary>
+    private static double Points(double millimetres) => Whole(millimetres * 100) / 100.0 * 72 / 25.4;
+
+    private async Task<(string Path, string Message)> EditAsync(
+        string source, PdfEditOptions edit, string? password, OutputOptions options, CancellationToken ct)
+    {
+        PdfOperationResult result = await _service.EditAsync(source, edit, OutputPath, password, options, ct).ConfigureAwait(true);
+        string message = _strings.Format("ToolPagesDone", result.PageCount);
+        if (result.Warnings.Count > 0)
+        {
+            message += " " + _strings.Get("ToolEditNoPassword");
+        }
+
+        return (result.OutputPath, message);
     }
 
     /// <summary>A NumberBox reports NaN when cleared; treat that, and negatives, as 0.</summary>
@@ -536,9 +715,16 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
             ToolKind.Unlock => "unlocked",
             ToolKind.Optimize => "optimized",
             ToolKind.ImagesToPdf => "album",
+            ToolKind.Watermark => "watermarked",
+            ToolKind.PageNumbers => "numbered",
+            ToolKind.AddImage => "stamped",
+            ToolKind.Crop => "cropped",
+            ToolKind.Flatten => "flattened",
+            ToolKind.RemovePages => "trimmed",
+            ToolKind.ToText => "text",
             _ => "images",
         };
-        string extension = ProducesFolder ? string.Empty : ".pdf";
+        string extension = ProducesFolder ? string.Empty : OutputExtension;
 
         for (int attempt = 1; ; attempt++)
         {

@@ -113,6 +113,7 @@
                 <StackPanel Spacing="16">
                     <TextBox
                         x:Uid="ToolPages"
+                        Header="{x:Bind ViewModel.PagesHeader}"
                         Text="{x:Bind ViewModel.PagesText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         Visibility="{x:Bind ViewModel.ShowPages}" />
 
@@ -220,6 +221,121 @@
                             Minimum="0"
                             SpinButtonPlacementMode="Inline"
                             Value="{x:Bind ViewModel.MarginMm, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.ShowWatermark}">
+                        <TextBox x:Uid="ToolWatermarkText" Text="{x:Bind ViewModel.WatermarkText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <ComboBox
+                            x:Uid="ToolStampColor"
+                            MinWidth="200"
+                            SelectedIndex="{x:Bind ViewModel.StampColorIndex, Mode=TwoWay}">
+                            <ComboBoxItem x:Uid="ToolColorGray" />
+                            <ComboBoxItem x:Uid="ToolColorRed" />
+                            <ComboBoxItem x:Uid="ToolColorBlue" />
+                            <ComboBoxItem x:Uid="ToolColorBlack" />
+                        </ComboBox>
+                        <Slider
+                            x:Uid="ToolStampOpacity"
+                            MaxWidth="360"
+                            HorizontalAlignment="Left"
+                            Maximum="100"
+                            Minimum="5"
+                            StepFrequency="5"
+                            Value="{x:Bind ViewModel.StampOpacity, Mode=TwoWay}" />
+                        <NumberBox
+                            x:Uid="ToolStampAngle"
+                            HorizontalAlignment="Left"
+                            Maximum="180"
+                            Minimum="-180"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{x:Bind ViewModel.StampAngle, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.ShowPageNumbers}">
+                        <TextBox x:Uid="ToolNumberFormat" Text="{x:Bind ViewModel.NumberFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <NumberBox
+                            x:Uid="ToolStartNumber"
+                            HorizontalAlignment="Left"
+                            Minimum="0"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{x:Bind ViewModel.StartNumber, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.ShowStampImage}">
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Uid="ToolStampImage" Text="{x:Bind ViewModel.StampImagePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                x:Uid="ToolBrowseImage"
+                                Grid.Column="1"
+                                VerticalAlignment="Bottom"
+                                Click="OnBrowseImageClick" />
+                        </Grid>
+                        <NumberBox
+                            x:Uid="ToolImageWidth"
+                            HorizontalAlignment="Left"
+                            Maximum="1000"
+                            Minimum="1"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{x:Bind ViewModel.ImageWidthMm, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.ShowStampLayout}">
+                        <NumberBox
+                            x:Uid="ToolFontSize"
+                            HorizontalAlignment="Left"
+                            Maximum="300"
+                            Minimum="4"
+                            SpinButtonPlacementMode="Inline"
+                            Visibility="{x:Bind ViewModel.ShowFontSize}"
+                            Value="{x:Bind ViewModel.StampFontSize, Mode=TwoWay}" />
+                        <ComboBox
+                            x:Uid="ToolPosition"
+                            MinWidth="220"
+                            SelectedIndex="{x:Bind ViewModel.PositionIndex, Mode=TwoWay}">
+                            <ComboBoxItem x:Uid="ToolPosTopLeft" />
+                            <ComboBoxItem x:Uid="ToolPosTopCenter" />
+                            <ComboBoxItem x:Uid="ToolPosTopRight" />
+                            <ComboBoxItem x:Uid="ToolPosMiddleLeft" />
+                            <ComboBoxItem x:Uid="ToolPosCenter" />
+                            <ComboBoxItem x:Uid="ToolPosMiddleRight" />
+                            <ComboBoxItem x:Uid="ToolPosBottomLeft" />
+                            <ComboBoxItem x:Uid="ToolPosBottomCenter" />
+                            <ComboBoxItem x:Uid="ToolPosBottomRight" />
+                        </ComboBox>
+                        <NumberBox
+                            x:Uid="ToolStampMargin"
+                            HorizontalAlignment="Left"
+                            Maximum="200"
+                            Minimum="0"
+                            SpinButtonPlacementMode="Inline"
+                            Visibility="{x:Bind ViewModel.ShowStampMargin}"
+                            Value="{x:Bind ViewModel.MarginMm, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.ShowCrop}">
+                        <Grid ColumnSpacing="12" RowSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <NumberBox x:Uid="ToolCropTop" Minimum="0" SpinButtonPlacementMode="Compact" Value="{x:Bind ViewModel.CropTopMm, Mode=TwoWay}" />
+                            <NumberBox x:Uid="ToolCropBottom" Grid.Column="1" Minimum="0" SpinButtonPlacementMode="Compact" Value="{x:Bind ViewModel.CropBottomMm, Mode=TwoWay}" />
+                            <NumberBox x:Uid="ToolCropLeft" Grid.Row="1" Minimum="0" SpinButtonPlacementMode="Compact" Value="{x:Bind ViewModel.CropLeftMm, Mode=TwoWay}" />
+                            <NumberBox x:Uid="ToolCropRight" Grid.Row="1" Grid.Column="1" Minimum="0" SpinButtonPlacementMode="Compact" Value="{x:Bind ViewModel.CropRightMm, Mode=TwoWay}" />
+                        </Grid>
+                        <TextBlock
+                            x:Uid="ToolCropHint"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{ThemeResource CaptionTextBlockStyle}"
+                            TextWrapping="Wrap" />
                     </StackPanel>
 
                     <PasswordBox

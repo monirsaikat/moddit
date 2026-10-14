@@ -46,6 +46,9 @@ internal sealed class EngineService(PdfiumEngine pdfium) : IEngineService
     public Task<ImagesToPdfResult> ImagesToPdfAsync(ImagesToPdfRequest request, CancellationToken cancellationToken) =>
         Guard(() => Task.Run(() => ImagesToPdf.Write(request, cancellationToken), cancellationToken));
 
+    public Task<PdfEditResult> EditPdfAsync(PdfEditRequest request, CancellationToken cancellationToken) =>
+        Guard(() => pdfium.EditAsync(request, cancellationToken));
+
     public Task CrashAsync(CancellationToken cancellationToken)
     {
         Environment.FailFast("Modit.Engine.Host: crash requested by client (test hook).");

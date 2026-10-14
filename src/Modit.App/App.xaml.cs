@@ -133,7 +133,15 @@ public sealed partial class App : Application
             Enum.TryParse(args[flag + 1], ignoreCase: true, out ToolKind kind) && Enum.IsDefined(kind))
         {
             args.RemoveRange(flag, 2);
-            window.OpenTool(kind).ViewModel.AddFiles(FilesIn(args));
+            if (kind == ToolKind.Organize)
+            {
+                _ = window.OpenOrganizerAsync([.. FilesIn(args)]);
+            }
+            else
+            {
+                window.OpenTool(kind).ViewModel.AddFiles(FilesIn(args));
+            }
+
             return;
         }
 

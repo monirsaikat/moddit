@@ -99,7 +99,6 @@
   <data name="ToolFileRemove.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Remove from list</value></data>
   <data name="ToolFileRemove.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Remove from list</value></data>
   <data name="ToolOptionsHeader.Text" xml:space="preserve"><value>Options</value></data>
-  <data name="ToolPages.Header" xml:space="preserve"><value>Pages</value></data>
   <data name="ToolPages.PlaceholderText" xml:space="preserve"><value>For example 1-3,7,10-end. Leave empty for all pages.</value></data>
   <data name="ToolPagesPerFile.Header" xml:space="preserve"><value>Pages in each file</value></data>
   <data name="ToolAngle.Header" xml:space="preserve"><value>Turn</value></data>
@@ -170,4 +169,86 @@
   <data name="ToolConvertSomeFailed" xml:space="preserve"><value>{0} could not be converted. First problem: {1}</value></data>
   <data name="ToolErrorNotAnImage" xml:space="preserve"><value>This file is not an image Modit can read.</value></data>
   <data name="ToolErrorImageDamaged" xml:space="preserve"><value>This image is damaged or uses a feature Modit cannot read.</value></data>
+  <data name="HomeEditHeader.Text" xml:space="preserve"><value>Edit pages</value></data>
+  <data name="ToolOrganizeTitle" xml:space="preserve"><value>Organize pages</value></data>
+  <data name="ToolOrganizeDescription" xml:space="preserve"><value>See every page. Drag to reorder, turn, delete or add pages, even from other PDFs.</value></data>
+  <data name="ToolWatermarkTitle" xml:space="preserve"><value>Add watermark</value></data>
+  <data name="ToolWatermarkDescription" xml:space="preserve"><value>Write text such as DRAFT or CONFIDENTIAL across pages.</value></data>
+  <data name="ToolPageNumbersTitle" xml:space="preserve"><value>Add page numbers</value></data>
+  <data name="ToolPageNumbersDescription" xml:space="preserve"><value>Number pages, or add a header or footer with the file name or date.</value></data>
+  <data name="ToolAddImageTitle" xml:space="preserve"><value>Add image or signature</value></data>
+  <data name="ToolAddImageDescription" xml:space="preserve"><value>Place a logo, stamp or signature picture on pages.</value></data>
+  <data name="ToolCropTitle" xml:space="preserve"><value>Crop pages</value></data>
+  <data name="ToolCropDescription" xml:space="preserve"><value>Trim white margins or cut pages down to the part you need.</value></data>
+  <data name="ToolFlattenTitle" xml:space="preserve"><value>Flatten forms</value></data>
+  <data name="ToolFlattenDescription" xml:space="preserve"><value>Turn filled-in forms and comments into fixed page content.</value></data>
+  <data name="ToolRemovePagesTitle" xml:space="preserve"><value>Remove pages</value></data>
+  <data name="ToolRemovePagesDescription" xml:space="preserve"><value>Delete the pages you do not need.</value></data>
+  <data name="ToolToTextTitle" xml:space="preserve"><value>PDF to text</value></data>
+  <data name="ToolToTextDescription" xml:space="preserve"><value>Save the text of a PDF as a plain .txt file.</value></data>
+  <data name="ToolPagesHeader" xml:space="preserve"><value>Pages</value></data>
+  <data name="ToolPagesToRemove" xml:space="preserve"><value>Pages to remove</value></data>
+  <data name="ToolWatermarkText.Header" xml:space="preserve"><value>Text</value></data>
+  <data name="ToolStampColor.Header" xml:space="preserve"><value>Color</value></data>
+  <data name="ToolColorGray.Content" xml:space="preserve"><value>Gray</value></data>
+  <data name="ToolColorRed.Content" xml:space="preserve"><value>Red</value></data>
+  <data name="ToolColorBlue.Content" xml:space="preserve"><value>Blue</value></data>
+  <data name="ToolColorBlack.Content" xml:space="preserve"><value>Black</value></data>
+  <data name="ToolStampOpacity.Header" xml:space="preserve"><value>Opacity (%)</value></data>
+  <data name="ToolStampAngle.Header" xml:space="preserve"><value>Angle (degrees)</value></data>
+  <data name="ToolNumberFormat.Header" xml:space="preserve"><value>Text on each page</value></data>
+  <data name="ToolNumberFormat.Description" xml:space="preserve"><value>{page} is the page number, {pages} the last number, {name} the file name and {date} today's date.</value></data>
+  <data name="ToolStartNumber.Header" xml:space="preserve"><value>Number of the first page</value></data>
+  <data name="ToolStampImage.Header" xml:space="preserve"><value>Picture</value></data>
+  <data name="ToolStampImage.PlaceholderText" xml:space="preserve"><value>PNG with a transparent background works best for signatures</value></data>
+  <data name="ToolBrowseImage.Content" xml:space="preserve"><value>Choose…</value></data>
+  <data name="ToolImageWidth.Header" xml:space="preserve"><value>Width (mm)</value></data>
+  <data name="ToolFontSize.Header" xml:space="preserve"><value>Text size (pt)</value></data>
+  <data name="ToolPosition.Header" xml:space="preserve"><value>Position</value></data>
+  <data name="ToolPosTopLeft.Content" xml:space="preserve"><value>Top left</value></data>
+  <data name="ToolPosTopCenter.Content" xml:space="preserve"><value>Top center</value></data>
+  <data name="ToolPosTopRight.Content" xml:space="preserve"><value>Top right</value></data>
+  <data name="ToolPosMiddleLeft.Content" xml:space="preserve"><value>Middle left</value></data>
+  <data name="ToolPosCenter.Content" xml:space="preserve"><value>Center</value></data>
+  <data name="ToolPosMiddleRight.Content" xml:space="preserve"><value>Middle right</value></data>
+  <data name="ToolPosBottomLeft.Content" xml:space="preserve"><value>Bottom left</value></data>
+  <data name="ToolPosBottomCenter.Content" xml:space="preserve"><value>Bottom center</value></data>
+  <data name="ToolPosBottomRight.Content" xml:space="preserve"><value>Bottom right</value></data>
+  <data name="ToolStampMargin.Header" xml:space="preserve"><value>Distance from the edge (mm)</value></data>
+  <data name="ToolCropTop.Header" xml:space="preserve"><value>Top (mm)</value></data>
+  <data name="ToolCropBottom.Header" xml:space="preserve"><value>Bottom (mm)</value></data>
+  <data name="ToolCropLeft.Header" xml:space="preserve"><value>Left (mm)</value></data>
+  <data name="ToolCropRight.Header" xml:space="preserve"><value>Right (mm)</value></data>
+  <data name="ToolCropHint.Text" xml:space="preserve"><value>Measured on the page as you see it. The trimmed part is hidden, not deleted.</value></data>
+  <data name="ToolImageRequired" xml:space="preserve"><value>Choose a picture to add.</value></data>
+  <data name="ToolCropRequired" xml:space="preserve"><value>Enter how much to trim from at least one edge.</value></data>
+  <data name="ToolRemoveRequired" xml:space="preserve"><value>Type the pages to remove, for example 2,5-7.</value></data>
+  <data name="ToolTextDone" xml:space="preserve"><value>Saved the text of {0} pages.</value></data>
+  <data name="ToolEditNoPassword" xml:space="preserve"><value>The original was password protected; this copy is not.</value></data>
+  <data name="OrganizeAddPdf.Label" xml:space="preserve"><value>Add PDF</value></data>
+  <data name="OrganizeInsertBlank.Label" xml:space="preserve"><value>Blank page</value></data>
+  <data name="OrganizeRotateLeft.Label" xml:space="preserve"><value>Rotate left</value></data>
+  <data name="OrganizeRotateLeft.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Rotate left (Ctrl+Shift+R)</value></data>
+  <data name="OrganizeRotateRight.Label" xml:space="preserve"><value>Rotate right</value></data>
+  <data name="OrganizeRotateRight.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Rotate right (Ctrl+R)</value></data>
+  <data name="OrganizeMoveEarlier.Label" xml:space="preserve"><value>Move earlier</value></data>
+  <data name="OrganizeMoveLater.Label" xml:space="preserve"><value>Move later</value></data>
+  <data name="OrganizeDuplicate.Label" xml:space="preserve"><value>Duplicate</value></data>
+  <data name="OrganizeDelete.Label" xml:space="preserve"><value>Delete</value></data>
+  <data name="OrganizeDelete.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Delete (Del)</value></data>
+  <data name="OrganizeUndo.Label" xml:space="preserve"><value>Undo</value></data>
+  <data name="OrganizeUndo.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Undo (Ctrl+Z)</value></data>
+  <data name="OrganizeSave.Content" xml:space="preserve"><value>Save as…</value></data>
+  <data name="OrganizeGrid.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Pages</value></data>
+  <data name="OrganizeHint.Text" xml:space="preserve"><value>Drag pages to reorder. Ctrl or Shift selects several.</value></data>
+  <data name="OrganizeStatus" xml:space="preserve"><value>{0} pages from {1} document(s)</value></data>
+  <data name="OrganizeStatusOne" xml:space="preserve"><value>1 page from {1} document(s)</value></data>
+  <data name="OrganizeBlankLabel" xml:space="preserve"><value>Blank</value></data>
+  <data name="OrganizeNoPages" xml:space="preserve"><value>There are no pages to save.</value></data>
+  <data name="OrganizeSaveOverSource" xml:space="preserve"><value>Save under a new name. Modit does not overwrite the original documents.</value></data>
+  <data name="OrganizeTabHeader" xml:space="preserve"><value>Organize: {0}</value></data>
+  <data name="DiscardTitle" xml:space="preserve"><value>Close {0} without saving?</value></data>
+  <data name="DiscardMessage" xml:space="preserve"><value>Your changes to the page order have not been saved.</value></data>
+  <data name="DiscardButton" xml:space="preserve"><value>Close without saving</value></data>
+  <data name="DocumentToolsButton.Content" xml:space="preserve"><value>Tools</value></data>
 </root>

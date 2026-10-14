@@ -75,6 +75,54 @@
                 </Grid>
             </Border>
 
+            <!-- Edit -->
+            <TextBlock
+                x:Uid="HomeEditHeader"
+                Margin="0,8,0,0"
+                Style="{ThemeResource BodyStrongTextBlockStyle}" />
+            <ItemsRepeater x:Name="EditTiles">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout
+                        ItemsStretch="Fill"
+                        MinColumnSpacing="12"
+                        MinItemHeight="96"
+                        MinItemWidth="280"
+                        MinRowSpacing="12" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="local:ToolTile">
+                        <Button
+                            Padding="16"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            AutomationProperties.Name="{x:Bind Title}"
+                            Click="OnToolTileClick"
+                            Tag="{x:Bind}">
+                            <Grid ColumnSpacing="14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon
+                                    VerticalAlignment="Top"
+                                    FontSize="24"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    Glyph="{x:Bind Glyph}" />
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Title}" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind Description}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+
             <!-- Tools -->
             <TextBlock
                 x:Uid="HomeToolsHeader"

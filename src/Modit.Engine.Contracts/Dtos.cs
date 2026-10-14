@@ -115,3 +115,73 @@ public sealed record ImagesToPdfResult(
     [property: Key(0)] int PageCount,
     [property: Key(1)] long OutputBytes,
     [property: Key(2)] int PassthroughJpegs);
+
+/// <summary>
+/// Where a stamp sits on the page as the reader sees it (after page rotation):
+/// <c>top-left</c>, <c>top-center</c>, <c>top-right</c>, <c>middle-left</c>, <c>center</c>, <c>middle-right</c>,
+/// <c>bottom-left</c>, <c>bottom-center</c>, <c>bottom-right</c>.
+/// </summary>
+public static class StampPositions
+{
+    public static readonly IReadOnlyList<string> All =
+    [
+        "top-left", "top-center", "top-right",
+        "middle-left", "center", "middle-right",
+        "bottom-left", "bottom-center", "bottom-right",
+    ];
+}
+
+/// <summary>
+/// Text drawn on pages. <see cref="Text"/> may contain <c>{page}</c>, <c>{pages}</c>, <c>{name}</c> and
+/// <c>{date}</c>. Page numbers are <c>page index + StartNumber</c>.
+/// </summary>
+[MessagePackObject]
+public sealed record PdfTextStamp(
+    [property: Key(0)] string Text,
+    [property: Key(1)] double FontSizePt,
+    [property: Key(2)] string Color,
+    [property: Key(3)] double Opacity,
+    [property: Key(4)] double RotationDegrees,
+    [property: Key(5)] string Position,
+    [property: Key(6)] double MarginPt,
+    [property: Key(7)] int StartNumber,
+    [property: Key(8)] string DocumentName,
+    [property: Key(9)] bool Bold);
+
+/// <summary>A picture (logo, signature, stamp) drawn on pages, <see cref="WidthPt"/> wide, aspect kept.</summary>
+[MessagePackObject]
+public sealed record PdfImageStamp(
+    [property: Key(0)] string ImagePath,
+    [property: Key(1)] double WidthPt,
+    [property: Key(2)] string Position,
+    [property: Key(3)] double MarginPt);
+
+/// <summary>Trims the visible page area by these amounts, measured on the page as the reader sees it.</summary>
+[MessagePackObject]
+public sealed record PdfCrop(
+    [property: Key(0)] double LeftPt,
+    [property: Key(1)] double TopPt,
+    [property: Key(2)] double RightPt,
+    [property: Key(3)] double BottomPt);
+
+/// <summary>
+/// Changes page content with PDFium and writes the whole document to <see cref="OutputPath"/>.
+/// <see cref="PageIndexes"/> null means every page. Flattening runs first, then crop, then stamps.
+/// </summary>
+[MessagePackObject]
+public sealed record PdfEditRequest(
+    [property: Key(0)] string InputPath,
+    [property: Key(1)] string? Password,
+    [property: Key(2)] string OutputPath,
+    [property: Key(3)] IReadOnlyList<int>? PageIndexes,
+    [property: Key(4)] PdfTextStamp? Text,
+    [property: Key(5)] PdfImageStamp? Image,
+    [property: Key(6)] PdfCrop? Crop,
+    [property: Key(7)] bool Flatten);
+
+[MessagePackObject]
+public sealed record PdfEditResult(
+    [property: Key(0)] int PageCount,
+    [property: Key(1)] int PagesChanged,
+    [property: Key(2)] bool SecurityRemoved,
+    [property: Key(3)] IReadOnlyList<string> Warnings);

@@ -60,7 +60,7 @@ public sealed record ImagesToPdfOptions
 /// write to a temporary file beside the target, verify that it re-opens with the expected page
 /// count, then move it into place (docs/plan/02, "Save strategy"). The source file is never modified.
 /// </summary>
-public sealed class PdfService
+public sealed partial class PdfService
 {
     private const int QpdfExitWarning = 3;
 

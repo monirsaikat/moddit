@@ -144,6 +144,44 @@ internal static class ImageEngine
         }
     }
 
+    /// <summary>
+    /// Decodes a picture for stamping onto PDF pages: upright, 8-bit, straight (not premultiplied) BGRA, at
+    /// most <paramref name="maxEdge"/> pixels on its longest side. SVG is rendered to fit that size.
+    /// </summary>
+    internal static (byte[] Bgra, int Width, int Height) DecodeBgra(string path, int maxEdge)
+    {
+        string format = SniffReadable(path);
+        using var owned = new ImageScope();
+        try
+        {
+            Loaded loaded = Load(owned, path, format, maxEdge, maxEdge, DefaultVectorDpi, keepAnimation: false);
+
+            // "webp" here means: 8-bit sRGB, transparency kept.
+            Image image = Prepare(owned, loaded.Image, "webp", "#FFFFFF");
+            if (image.Bands <= 2)
+            {
+                image = owned.Add(image.Colourspace(Enums.Interpretation.Srgb));
+            }
+
+            if (!image.HasAlpha())
+            {
+                image = owned.Add(image.BandjoinConst([255]));
+            }
+
+            byte[] pixels = image.WriteToMemory<byte>();
+            for (int i = 0; i < pixels.Length; i += 4)
+            {
+                (pixels[i], pixels[i + 2]) = (pixels[i + 2], pixels[i]);
+            }
+
+            return (pixels, image.Width, image.Height);
+        }
+        catch (VipsException ex)
+        {
+            throw InputError(ex, path);
+        }
+    }
+
     internal static string SniffReadable(string path)
     {
         string? format;
