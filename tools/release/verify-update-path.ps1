@@ -34,9 +34,16 @@ function Get-InstalledVersion {
     try { return (& $cli --version 2>$null | Select-Object -First 1).Trim().Split('+')[0] } catch { return $null }
 }
 
+function Test-OurProcess($process) {
+    # Match on the unique folder name, not the full path: %TEMP% can be an 8.3 short path (C:\Users\RUNNER~1\...)
+    # while the updater relaunches the app through the long path, so a prefix comparison misses it.
+    $leaf = Split-Path $InstallDir -Leaf
+    return $process.Path -and $process.Path.IndexOf("\$leaf\", [StringComparison]::OrdinalIgnoreCase) -ge 0
+}
+
 function Stop-Modit {
     Get-Process -Name 'Modit.App', 'Modit.Engine.Host' -ErrorAction SilentlyContinue |
-        Where-Object { $_.Path -and $_.Path.StartsWith($InstallDir, [StringComparison]::OrdinalIgnoreCase) } |
+        Where-Object { Test-OurProcess $_ } |
         ForEach-Object { try { $_.Kill(); $_.WaitForExit(5000) | Out-Null } catch { } }
 }
 
@@ -100,7 +107,7 @@ try {
     while ((Get-Date) -lt $deadline -and -not $relaunched) {
         Start-Sleep -Seconds 1
         $relaunched = @(Get-Process -Name 'Modit.App' -ErrorAction SilentlyContinue |
-            Where-Object { $_.Path -and $_.Path.StartsWith($InstallDir, [StringComparison]::OrdinalIgnoreCase) }).Count -gt 0
+            Where-Object { Test-OurProcess $_ }).Count -gt 0
     }
     if (-not $relaunched) { Write-Diagnostics }
     Assert-True $relaunched 'The new version was started again after the update'
