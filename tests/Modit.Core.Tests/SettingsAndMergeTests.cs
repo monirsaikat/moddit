@@ -29,6 +29,33 @@ public sealed class SettingsServiceTests : IDisposable
     }
 
     [Fact]
+    public void Settings_and_recovery_move_once_from_the_legacy_install_root()
+    {
+        string legacy = Path.Combine(_dir, "Modit");
+        Directory.CreateDirectory(Path.Combine(legacy, "recovery"));
+        File.WriteAllText(Path.Combine(legacy, "settings.json"), "{ \"schemaVersion\": 1, \"theme\": \"Dark\" }");
+        File.WriteAllText(Path.Combine(legacy, "recovery", "session.json"), "{}");
+        var paths = new AppPaths(Path.Combine(_dir, "ModitData"), isPortable: false);
+
+        paths.MigrateFrom(legacy);
+        Assert.Equal(AppTheme.Dark, new SettingsService(paths).Current.Theme);
+        Assert.True(File.Exists(Path.Combine(paths.RecoveryDirectory, "session.json")));
+
+        // Later runs never overwrite newer settings with the old copy.
+        new SettingsService(paths).Update(s => s with { Theme = AppTheme.Light });
+        paths.MigrateFrom(legacy);
+        Assert.Equal(AppTheme.Light, new SettingsService(paths).Current.Theme);
+    }
+
+    [Fact]
+    public void Migration_without_legacy_data_creates_nothing()
+    {
+        var paths = new AppPaths(Path.Combine(_dir, "ModitData"), isPortable: false);
+        paths.MigrateFrom(Path.Combine(_dir, "missing"));
+        Assert.False(Directory.Exists(paths.DataRoot));
+    }
+
+    [Fact]
     public void A_corrupt_file_is_set_aside_and_defaults_are_used()
     {
         Directory.CreateDirectory(_dir);

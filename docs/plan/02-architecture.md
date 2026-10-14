@@ -125,7 +125,7 @@ Structural page edits in the GUI (reorder, rotate, delete, insert) are **not** a
 click. They append to an `EditLog` (list of `PageEdit` records) and the UI shows a virtual page sequence.
 Rendering requests map virtual page → (source document, source page, rotation delta). Save/Save As compiles the
 `EditLog` into one QPDF job (one write, one pass). This gives instant UI, unlimited undo/redo, and crash-safe
-recovery (EditLog is journaled to `%LOCALAPPDATA%\Modit\recovery\<docid>.json` every edit).
+recovery (EditLog is journaled to `%LOCALAPPDATA%\ModitData\recovery\<docid>.json` every edit).
 
 Content edits (annotations, form values, inserted objects) are applied in the render host's in-memory PDFium
 document immediately (so re-render reflects them) **and** journaled as `ContentEdit` records for recovery.
@@ -153,7 +153,7 @@ Scroll/zoom event → Viewport (page layout in document points) → VisibleTiles
   nearest cached bucket scaled (bilinear) and schedule exact render.
 - Low-res "preview" tile: whole page at ≤ 64 px width rendered first for instant placeholder.
 - Cache: GPU budget (default 256 MB, policy-configurable), RAM budget (512 MB), LRU with viewport-distance scoring.
-- Thumbnails: separate pipeline, 160 px wide, cached on disk (`%LOCALAPPDATA%\Modit\cache\thumbs`) keyed by
+- Thumbnails: separate pipeline, 160 px wide, cached on disk (`%LOCALAPPDATA%\ModitData\cache\thumbs`) keyed by
   file hash + mtime + page.
 - Text layer: per-page character boxes from `FPDFText_*` fetched lazily for selection/search/accessibility.
 
@@ -173,14 +173,14 @@ always win over transitive ones unless the direct converter is unavailable (engi
 
 | Store | Location | Format |
 |-------|----------|--------|
-| User settings | `%LOCALAPPDATA%\Modit\settings.json` | JSON, schema-versioned, migrated on upgrade |
+| User settings | `%LOCALAPPDATA%\ModitData\settings.json` | JSON, schema-versioned, migrated on upgrade |
 | Policies (admin) | `HKLM\SOFTWARE\Policies\Modit` then `HKCU\SOFTWARE\Policies\Modit` | Registry (ADMX), read-only, override settings |
-| Recipes | `%LOCALAPPDATA%\Modit\recipes\*.json` + `%PROGRAMDATA%\Modit\recipes` (shared) | JSON |
-| Job queue | `%LOCALAPPDATA%\Modit\queue.db` | SQLite (Microsoft.Data.Sqlite) |
-| Caches | `%LOCALAPPDATA%\Modit\cache\` | Files, size-capped, safe to delete |
-| Recovery | `%LOCALAPPDATA%\Modit\recovery\` | JSON journals |
+| Recipes | `%LOCALAPPDATA%\ModitData\recipes\*.json` + `%PROGRAMDATA%\Modit\recipes` (shared) | JSON |
+| Job queue | `%LOCALAPPDATA%\ModitData\queue.db` | SQLite (Microsoft.Data.Sqlite) |
+| Caches | `%LOCALAPPDATA%\ModitData\cache\` | Files, size-capped, safe to delete |
+| Recovery | `%LOCALAPPDATA%\ModitData\recovery\` | JSON journals |
 | Audit log | `%PROGRAMDATA%\Modit\audit\*.jsonl` (policy may redirect) | JSONL, rotated |
-| Engine packs | `%LOCALAPPDATA%\Modit\engines\<name>\<version>\` or `%PROGRAMFILES%\Modit\engines` (admin) | Files + manifest.json + SHA-256 |
+| Engine packs | `%LOCALAPPDATA%\ModitData\engines\<name>\<version>\` or `%PROGRAMFILES%\Modit\engines` (admin) | Files + manifest.json + SHA-256 |
 
 Effective setting = policy value if present (locked in UI with a "Managed by your organization" badge), else user value, else default.
 
@@ -211,7 +211,7 @@ Effective setting = policy value if present (locked in UI with a "Managed by you
 
 ## Logging and diagnostics
 
-- `Microsoft.Extensions.Logging` with a rolling file sink (`%LOCALAPPDATA%\Modit\logs\`, 7 days, 50 MB cap) and
+- `Microsoft.Extensions.Logging` with a rolling file sink (`%LOCALAPPDATA%\ModitData\logs\`, 7 days, 50 MB cap) and
   ETW/EventSource provider `Modit-App` for WPA/PerfView traces.
 - "Collect diagnostics" button zips logs + settings (redacted) + engine versions + minidumps.
 - Never log file contents, file names at Information level (Debug only), or passwords.

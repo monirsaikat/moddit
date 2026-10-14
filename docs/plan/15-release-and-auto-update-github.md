@@ -187,7 +187,7 @@ is for emergencies and is also cached locally for 7 days).
 - `modit-packs` releases: one release per pack version, tag `office-libreoffice/24.8.3`, assets `pack.zip`
   (≤ 2 GB), `manifest.json`, `manifest.json.sig` (Ed25519, key in app). Index `packs/index.json` on Pages lists
   pack id → versions → compatible app version range → asset URLs → SHA-256 → license → size.
-- Downloader: resumable (HTTP Range) to `%LOCALAPPDATA%\Modit\engines\.downloads`, verifies SHA-256 and
+- Downloader: resumable (HTTP Range) to `%LOCALAPPDATA%\ModitData\engines\.downloads`, verifies SHA-256 and
   signature, extracts with the archive safety rules, atomically renames into place.
 - Mirror: `tools/mirror-release.ps1 -Dest \\server\share\modit` downloads a release and selected packs into a
   folder laid out exactly as the feeds expect (`releases.<channel>.json`, nupkgs, `packs/index.json`, MSI,

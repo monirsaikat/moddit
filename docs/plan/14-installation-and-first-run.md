@@ -59,7 +59,7 @@ VelopackApp.Build()
     .Run();
 ```
 
-Hooks must complete in < 15 s and never show UI (Velopack kills slow hooks). They log to `%LOCALAPPDATA%\Modit\logs\install.log`.
+Hooks must complete in < 15 s and never show UI (Velopack kills slow hooks). They log to `%LOCALAPPDATA%\ModitData\logs\install.log`.
 
 ## MSI / Burn flow [M6]
 
@@ -75,7 +75,7 @@ Hooks must complete in < 15 s and never show UI (Velopack kills slow hooks). The
 - Upgrade: `MajorUpgrade DowngradeErrorMessage` and `Schedule="afterInstallInitialize"`; settings untouched
   (they live in user profile). Running instances closed via `util:CloseApplication` with prompt in UI mode,
   forced in silent mode after `Modit.App --save-and-exit` (graceful: triggers autosave journals).
-- Uninstall: `REMOVEUSERDATA=1` deletes `%LOCALAPPDATA%\Modit` for the current user only; otherwise leaves data.
+- Uninstall: `REMOVEUSERDATA=1` deletes `%LOCALAPPDATA%\ModitData` for the current user only; otherwise leaves data.
 
 ## MSIX flow [M6]
 
@@ -108,7 +108,7 @@ At startup (`Startup/PrereqCheck` ETW event, < 20 ms):
 | WebView2 Runtime present (registry `pv` key) | Features needing it show an inline "Install WebView2" card that launches the Evergreen bootstrapper (downloaded from Microsoft, verified by signature); not a startup blocker |
 | Windows App SDK runtime (unpackaged, non-self-contained builds only; our builds are self-contained so this never fails) | Dialog with download link |
 | Native engine DLLs present and hash-matching `native/manifest.json` | "Installation damaged" → offers **Repair** (Velopack: re-download full package and reinstall; MSI: `msiexec /fa`; MSIX: `Reset` via Settings link) |
-| Writable `%LOCALAPPDATA%\Modit` | Falls back to `%TEMP%\Modit` with a warning banner |
+| Writable `%LOCALAPPDATA%\ModitData` | Falls back to `%TEMP%\Modit` with a warning banner |
 | HEVC extension (for HEIC) | Deferred; checked when a HEIC file is opened |
 | Engine packs integrity (lazy, per pack, on first use) | Offers re-download |
 
@@ -160,7 +160,7 @@ Upgrades (version changed since last run): show a **What's new** InfoBar on Home
   file associations and protocol (`HKCU\Software\Classes\Modit.*`, `Applications\Modit.App.exe`, `RegisteredApplications`),
   sparse package (`PackageManager.RemovePackageAsync`), scheduled tasks, context menu registry (Win10 classic),
   `HKCU\Software\Modit\Install`, jump list. Then a tiny WinUI-free dialog (Win32 `TaskDialog`): "Keep my settings,
-  recipes and license?" default Yes; No → deletes `%LOCALAPPDATA%\Modit`. Silent uninstall never prompts and keeps data.
+  recipes and license?" default Yes; No → deletes `%LOCALAPPDATA%\ModitData`. Silent uninstall never prompts and keeps data.
 - MSI: standard; same hook logic in a custom action (deferred, runs as user for HKCU parts via `Impersonate=yes`).
 - MSIX: OS removes everything in the package; per-user data in `LocalState` is removed by the OS; our sparse
   package is not used in MSIX flavor.
@@ -172,7 +172,7 @@ Upgrades (version changed since last run): show a **What's new** InfoBar on Home
 - Settings schema versioned; `SettingsMigrator` upgrades step by step; downgrade (rollback) tolerated by ignoring
   unknown keys and keeping a backup `settings.pre-<version>.json`.
 - Velopack → MSI: MSI property `MIGRATEFROMUSERINSTALL=1` (default 1 in UI mode with a checkbox) uninstalls the
-  per-user copy silently keeping data; app reads the same `%LOCALAPPDATA%\Modit`.
+  per-user copy silently keeping data; app reads the same `%LOCALAPPDATA%\ModitData`.
 - Portable → installed: `modit portable export` or Settings → Import settings.
 - Engine packs installed per-user remain valid for MSI installs (search order: per-machine, then per-user).
 
