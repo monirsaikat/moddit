@@ -63,7 +63,16 @@ try {
     Invoke-Checked 'Publish Modit.Engine.Host' { dotnet publish src/Modit.Engine.Host/Modit.Engine.Host.csproj @common @r2r }
     Invoke-Checked 'Publish modit CLI' { dotnet publish src/Modit.Cli/Modit.Cli.csproj @common @r2r }
 
-    foreach ($required in 'Modit.App.exe', 'Modit.Engine.Host.exe', 'modit.exe', "native/$Rid/pdfium.dll", "native/$Rid/qpdf30.dll") {
+    # License notices travel with the binaries (ADR-018). libvips ships its own list for the codecs it bundles.
+    Copy-Item (Join-Path $root 'THIRD-PARTY-NOTICES.md') $publishDir
+    $licenseDir = New-Item -ItemType Directory -Force (Join-Path $publishDir 'licenses')
+    $nugetRoot = if ($env:NUGET_PACKAGES) { $env:NUGET_PACKAGES } else { Join-Path $env:USERPROFILE ".nuget/packages" }
+    $vipsNotices = Get-ChildItem (Join-Path $nugetRoot "netvips.native.$Rid") -Recurse -Filter 'THIRD-PARTY-NOTICES.md' |
+        Sort-Object FullName -Descending | Select-Object -First 1
+    if (-not $vipsNotices) { throw "THIRD-PARTY-NOTICES.md of netvips.native.$Rid was not found in the NuGet cache" }
+    Copy-Item $vipsNotices.FullName (Join-Path $licenseDir 'libvips-THIRD-PARTY-NOTICES.md')
+
+    foreach ($required in 'Modit.App.exe', 'Modit.Engine.Host.exe', 'modit.exe', "native/$Rid/pdfium.dll", "native/$Rid/qpdf30.dll", 'libvips-42.dll', 'THIRD-PARTY-NOTICES.md') {
         if (-not (Test-Path (Join-Path $publishDir $required))) { throw "Publish output is missing $required" }
     }
 

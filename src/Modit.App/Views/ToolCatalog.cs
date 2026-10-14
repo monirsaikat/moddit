@@ -5,16 +5,22 @@ namespace Modit.App.Views;
 /// <summary>The tools shown on Home, in display order, with their Segoe Fluent Icons glyph.</summary>
 internal static class ToolCatalog
 {
-    public static IReadOnlyList<ToolKind> Order { get; } =
+    public static IReadOnlyList<ToolKind> PdfTools { get; } =
     [
         ToolKind.Merge,
         ToolKind.Split,
         ToolKind.Extract,
         ToolKind.Rotate,
         ToolKind.Optimize,
-        ToolKind.Images,
         ToolKind.Protect,
         ToolKind.Unlock,
+    ];
+
+    public static IReadOnlyList<ToolKind> ConvertTools { get; } =
+    [
+        ToolKind.ConvertImages,
+        ToolKind.ImagesToPdf,
+        ToolKind.Images,
     ];
 
     public static string Glyph(ToolKind kind) => kind switch
@@ -26,6 +32,8 @@ internal static class ToolCatalog
         ToolKind.Optimize => "\uE73F",
         ToolKind.Images => "\uEB9F",
         ToolKind.Protect => "\uE72E",
+        ToolKind.ConvertImages => "\uE8AB",
+        ToolKind.ImagesToPdf => "\uE8A5",
         _ => "\uE785",
     };
 }

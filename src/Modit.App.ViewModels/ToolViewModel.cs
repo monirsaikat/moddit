@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Modit.Core.Convert;
 using Modit.Core.Pdf;
 
 namespace Modit.App.ViewModels;
@@ -16,6 +17,8 @@ public enum ToolKind
     Unlock,
     Optimize,
     Images,
+    ConvertImages,
+    ImagesToPdf,
 }
 
 /// <summary>One input file of a tool, with the optional page selection used by Merge.</summary>
@@ -26,6 +29,10 @@ public sealed partial class ToolInputFile(string path) : ObservableObject
     public string Name { get; } = Path.GetFileName(path);
 
     public string Folder { get; } = Path.GetDirectoryName(path) ?? string.Empty;
+
+    /// <summary>Segoe Fluent Icons glyph: a PDF page for PDFs, a picture for images.</summary>
+    public string Glyph { get; } =
+        string.Equals(Path.GetExtension(path), ".pdf", StringComparison.OrdinalIgnoreCase) ? "\uEA90" : "\uEB9F";
 
     /// <summary>Page selection for this file, for example <c>1-3,7</c>. Empty means all pages.</summary>
     [ObservableProperty]
@@ -39,17 +46,21 @@ public sealed partial class ToolInputFile(string path) : ObservableObject
 public sealed partial class ToolViewModel : ObservableObject, IDisposable
 {
     private readonly PdfService _service;
+    private readonly ImageConvertService _converter;
     private readonly IStringProvider _strings;
     private bool _outputChosenByUser;
     private CancellationTokenSource? _cancellation;
 
-    public ToolViewModel(ToolKind kind, PdfService service, IStringProvider strings)
+    public ToolViewModel(ToolKind kind, PdfService service, ImageConvertService converter, IStringProvider strings)
     {
         Kind = kind;
         _service = service;
+        _converter = converter;
         _strings = strings;
         Title = strings.Get($"Tool{kind}Title");
         Description = strings.Get($"Tool{kind}Description");
+        AddFilesLabel = strings.Get(AcceptsImages ? "ToolAddImages" : "ToolAddPdf");
+        EmptyFilesText = strings.Get(AcceptsImages ? "ToolFilesEmptyImages" : "ToolFilesEmptyPdf");
         Files.CollectionChanged += (_, _) =>
         {
             SuggestOutput();
@@ -67,10 +78,37 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<ToolInputFile> Files { get; } = [];
 
-    public bool AllowsMultipleFiles => Kind == ToolKind.Merge;
+    public string AddFilesLabel { get; }
+
+    public string EmptyFilesText { get; }
+
+    public bool AllowsMultipleFiles => Kind is ToolKind.Merge or ToolKind.ConvertImages or ToolKind.ImagesToPdf;
+
+    /// <summary>True for tools whose input is images rather than PDFs.</summary>
+    public bool AcceptsImages => Kind is ToolKind.ConvertImages or ToolKind.ImagesToPdf;
+
+    /// <summary>True when the order of the input files matters, so the list offers up and down buttons.</summary>
+    public bool ShowReorder => Kind is ToolKind.Merge or ToolKind.ImagesToPdf;
 
     /// <summary>True when the tool writes several files into a folder instead of one file.</summary>
-    public bool ProducesFolder => Kind is ToolKind.Split or ToolKind.Images;
+    public bool ProducesFolder => Kind is ToolKind.Split or ToolKind.Images or ToolKind.ConvertImages;
+
+    public bool ShowInputPassword => !AcceptsImages;
+
+    public bool ShowTargetFormat => Kind == ToolKind.ConvertImages;
+
+    public bool ShowResize => Kind == ToolKind.ConvertImages;
+
+    public bool ShowPageLayout => Kind == ToolKind.ImagesToPdf;
+
+    public IReadOnlyList<string> TargetFormatNames { get; } = [.. ImageFormats.Writable.Select(f => f.DisplayName)];
+
+    private ImageFormatInfo SelectedFormat =>
+        ImageFormats.Writable[Math.Clamp(TargetFormatIndex, 0, ImageFormats.Writable.Count - 1)];
+
+    public bool ShowLossless => ShowTargetFormat && SelectedFormat.HasLossless;
+
+    public bool ShowQuality => ShowTargetFormat && SelectedFormat.HasQuality && !(Lossless && SelectedFormat.HasLossless);
 
     public bool ShowPerFilePages => Kind == ToolKind.Merge;
 
@@ -132,6 +170,35 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial double Dpi { get; set; } = 150;
 
+    /// <summary>Index into <see cref="ImageFormats.Writable"/>.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowQuality), nameof(ShowLossless))]
+    public partial int TargetFormatIndex { get; set; }
+
+    [ObservableProperty]
+    public partial double Quality { get; set; } = 85;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowQuality))]
+    public partial bool Lossless { get; set; }
+
+    /// <summary>0 keeps the original width.</summary>
+    [ObservableProperty]
+    public partial double MaxWidth { get; set; }
+
+    [ObservableProperty]
+    public partial double MaxHeight { get; set; }
+
+    [ObservableProperty]
+    public partial bool StripMetadata { get; set; }
+
+    /// <summary>0 = each page as large as its image, 1 = A4, 2 = Letter.</summary>
+    [ObservableProperty]
+    public partial int PageSizeIndex { get; set; }
+
+    [ObservableProperty]
+    public partial double MarginMm { get; set; }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
     [NotifyCanExecuteChangedFor(nameof(RunCommand))]
@@ -162,7 +229,10 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
     {
         foreach (string path in paths)
         {
-            if (!string.Equals(Path.GetExtension(path), ".pdf", StringComparison.OrdinalIgnoreCase))
+            bool accepted = AcceptsImages
+                ? ImageFormats.IsInput(path)
+                : string.Equals(Path.GetExtension(path), ".pdf", StringComparison.OrdinalIgnoreCase);
+            if (!accepted)
             {
                 continue;
             }
@@ -343,6 +413,21 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
                     : _strings.Get("ToolOptimizeNoGain"));
             }
 
+            case ToolKind.ConvertImages:
+                return await ConvertImagesAsync(ct).ConfigureAwait(true);
+
+            case ToolKind.ImagesToPdf:
+            {
+                var layout = new ImagesToPdfOptions
+                {
+                    PageSize = (PdfPageSize)Math.Clamp(PageSizeIndex, 0, 2),
+                    MarginPt = Whole(MarginMm) * 72 / 25.4,
+                };
+                PdfOperationResult result = await _service.FromImagesAsync(
+                    [.. Files.Select(f => f.FilePath)], OutputPath, layout, options, ct).ConfigureAwait(true);
+                return (result.OutputPath, _strings.Format("ToolPagesDone", result.PageCount));
+            }
+
             default:
             {
                 PdfMultiResult result = await _service.ExportImagesAsync(
@@ -352,8 +437,50 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
         }
     }
 
+    private async Task<(string Path, string Message)> ConvertImagesAsync(CancellationToken ct)
+    {
+        var options = new ImageConvertOptions
+        {
+            TargetFormat = SelectedFormat.Id,
+            Quality = (int)Math.Clamp(double.IsNaN(Quality) ? 85 : Quality, 1, 100),
+            Lossless = Lossless && SelectedFormat.HasLossless,
+            MaxWidthPx = Whole(MaxWidth),
+            MaxHeightPx = Whole(MaxHeight),
+            KeepMetadata = !StripMetadata,
+            OutputDirectory = OutputPath,
+            Collision = Overwrite ? CollisionPolicy.Overwrite : CollisionPolicy.Rename,
+        };
+        var progress = new Progress<ConvertProgress>(p => Progress = p.Total == 0 ? -1 : 100.0 * p.Done / p.Total);
+        ConvertBatchResult batch = await _converter.ConvertAsync(
+            [.. Files.Select(f => f.FilePath)], options, progress, ct).ConfigureAwait(true);
+
+        ConvertItemResult? firstFailure = batch.Items.FirstOrDefault(i => i.Status == ConvertItemStatus.Failed);
+        if (batch.Converted == 0 && firstFailure is not null)
+        {
+            throw new ModitException(firstFailure.Error, firstFailure.Message ?? string.Empty);
+        }
+
+        string message = _strings.Format("ToolConvertDone", batch.Converted);
+        if (firstFailure is not null)
+        {
+            string reason = Describe(new ModitException(firstFailure.Error, firstFailure.Message ?? string.Empty));
+            message += " " + _strings.Format("ToolConvertSomeFailed", batch.Failed, $"{Path.GetFileName(firstFailure.Input)}: {reason}");
+        }
+
+        // One result opens directly; several open their folder.
+        string resultPath = batch.Converted == 1
+            ? batch.Items.First(i => i.Status == ConvertItemStatus.Converted).Output!
+            : OutputPath;
+        return (resultPath, message);
+    }
+
+    /// <summary>A NumberBox reports NaN when cleared; treat that, and negatives, as 0.</summary>
+    private static int Whole(double value) => double.IsNaN(value) || value < 0 ? 0 : (int)Math.Round(value);
+
     private string Describe(ModitException ex) => ex.Code switch
     {
+        ErrorCode.ConvertUnsupportedFormat => _strings.Get("ToolErrorNotAnImage"),
+        ErrorCode.ConvertInputCorrupt => _strings.Get("ToolErrorImageDamaged"),
         ErrorCode.PdfEncryptedNeedsPassword => _strings.Get("ToolErrorNeedsPassword"),
         ErrorCode.PdfWrongPassword => _strings.Get("ToolErrorWrongPassword"),
         ErrorCode.PdfCorrupt => _strings.Get("ErrorPdfCorrupt"),
@@ -392,6 +519,12 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
         }
 
         ToolInputFile first = Files[0];
+        if (Kind == ToolKind.ConvertImages)
+        {
+            // Results go next to the first image; name clashes get (2), (3) ... so nothing is replaced.
+            return first.Folder;
+        }
+
         string baseName = Path.GetFileNameWithoutExtension(first.Name);
         string suffix = Kind switch
         {
@@ -402,6 +535,7 @@ public sealed partial class ToolViewModel : ObservableObject, IDisposable
             ToolKind.Protect => "protected",
             ToolKind.Unlock => "unlocked",
             ToolKind.Optimize => "optimized",
+            ToolKind.ImagesToPdf => "album",
             _ => "images",
         };
         string extension = ProducesFolder ? string.Empty : ".pdf";

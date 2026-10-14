@@ -18,7 +18,7 @@ Updated: 2026-10-13. One line per playbook task (docs/plan/12). "Verified" means
 | M0.10 Release pipeline + updater | Done locally | `tools/build.ps1` + `tools/release/verify-update-path.ps1`: silent install, self-update 0.1.0 → 0.1.1 by delta, relaunch, clean uninstall. **GitHub workflows are written but have never run**: no repository, token or signing account exists yet |
 | M0.11 First run and install polish | Partial | Welcome card, "Open with" registration and residue-free uninstall are done and verified. Repair, reset settings, prerequisite checks and What's New are not |
 
-Tests: 70 passing (`dotnet test --solution Modit.sln`).
+Tests: 100 passing (`dotnet test --solution Modit.sln`).
 
 ## Version 0.2.0: PDF tools pulled forward from milestone 2
 
@@ -35,6 +35,22 @@ Added ahead of the roadmap because the 0.1 app could only open and read a PDF.
 
 Not done in the tools UI: drag to reorder, page thumbnails, validation messages are English only and come
 from `PdfService`, and no automated UI tests.
+
+## Version 0.3.0: image conversion pulled forward from milestone 3
+
+| Piece | State | Evidence |
+|---|---|---|
+| Image engine in the host | Done | libvips 8.18.7 (NetVips 3.2.0). Reads PNG, JPEG, WebP, AVIF, HEIC, TIFF, GIF, BMP, ICO, SVG. Writes PNG, JPEG, WebP, AVIF, TIFF, GIF, BMP, ICO. EXIF rotation, CMYK to sRGB, animated GIF/WebP kept, size limits, metadata strip |
+| `ImageConvertService` | Done | Batch, per-file failures, rename/skip/overwrite, verify-then-move. `ImageConvertTests` |
+| Images to PDF | Done | `PdfService.FromImagesAsync`; JPEG embedded unchanged; page size image/A4/Letter, margins |
+| Format sniffing | Done | `FormatSniffer` by content, tested |
+| CLI | Done | `modit convert ... --to webp`, `modit pdf from-images`; run by hand on PNG, JPEG (EXIF-rotated, CMYK), animated GIF, SVG |
+| App | Done | Home has a Convert section: Convert images, Images to PDF, PDF to images. Dropping images on Home opens the converter. Both tools were run through the UI by automation |
+| Notices | Done | `THIRD-PARTY-NOTICES.md` and the libvips notice list are copied into every build |
+
+Deviations: `docs/adr/0003-image-conversion-deviations.md` (SVG via librsvg instead of resvg needs owner approval).
+Not done: converter registry and options schema (M3.1), SVG to vector PDF, JPEG XL/PSD/TGA, queue tab, Explorer
+context menu.
 
 ## What the owner must provide before a real release
 

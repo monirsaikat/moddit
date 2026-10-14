@@ -37,6 +37,15 @@ internal sealed class EngineService(PdfiumEngine pdfium) : IEngineService
     public Task<QpdfJobResult> RunQpdfJobAsync(string jobJson, CancellationToken cancellationToken) =>
         Guard(() => QpdfEngine.RunJobAsync(jobJson, cancellationToken));
 
+    public Task<ImageInfoResult> GetImageInfoAsync(string path, CancellationToken cancellationToken) =>
+        Guard(() => Task.Run(() => ImageEngine.GetInfo(path), cancellationToken));
+
+    public Task<ImageConvertResult> ConvertImageAsync(ImageConvertRequest request, CancellationToken cancellationToken) =>
+        Guard(() => Task.Run(() => ImageEngine.Convert(request, cancellationToken), cancellationToken));
+
+    public Task<ImagesToPdfResult> ImagesToPdfAsync(ImagesToPdfRequest request, CancellationToken cancellationToken) =>
+        Guard(() => Task.Run(() => ImagesToPdf.Write(request, cancellationToken), cancellationToken));
+
     public Task CrashAsync(CancellationToken cancellationToken)
     {
         Environment.FailFast("Modit.Engine.Host: crash requested by client (test hook).");

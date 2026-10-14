@@ -35,6 +35,25 @@ public sealed record PdfOperationResult(
 
 public sealed record PdfMultiResult(IReadOnlyList<string> OutputPaths);
 
+public enum PdfPageSize
+{
+    /// <summary>Each page is exactly as large as its image (plus the margin).</summary>
+    Image,
+    A4,
+    Letter,
+}
+
+public sealed record ImagesToPdfOptions
+{
+    public PdfPageSize PageSize { get; init; } = PdfPageSize.Image;
+
+    /// <summary>Blank border around each image, in PDF points (1/72 inch).</summary>
+    public double MarginPt { get; init; }
+
+    /// <summary>Resolution SVG input is rendered at.</summary>
+    public double VectorDpi { get; init; } = 96;
+}
+
 /// <summary>
 /// PDF operations shared by the GUI and the CLI. Structural work is delegated to QPDF inside the
 /// engine host; this class validates input, builds the job, and applies the safe-save contract:
@@ -233,6 +252,63 @@ public sealed class PdfService
         return await RunToFileAsync(
             job, outputPath, options, info.PageCount, info.IsEncrypted ? password : null, info.FileSizeBytes, cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Builds one PDF from images, one image per page, in the given order. JPEG photos are embedded
+    /// unchanged; other formats are stored losslessly.
+    /// </summary>
+    public async Task<PdfOperationResult> FromImagesAsync(
+        IReadOnlyList<string> imagePaths, string outputPath, ImagesToPdfOptions? imageOptions = null,
+        OutputOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(imagePaths);
+        if (imagePaths.Count == 0)
+        {
+            throw new ModitException(ErrorCode.InvalidArgument, "Choose at least one image.");
+        }
+
+        imageOptions ??= new ImagesToPdfOptions();
+        if (imageOptions.MarginPt is < 0 or > 288)
+        {
+            throw new ModitException(ErrorCode.InvalidArgument, "The margin must be between 0 and 288 points (4 inches).");
+        }
+
+        outputPath = PrepareOutput(outputPath, options, imagePaths);
+        string[] sources = [.. imagePaths.Select(Path.GetFullPath)];
+        foreach (string source in sources.Where(s => !File.Exists(s)))
+        {
+            throw new ModitException(ErrorCode.FileNotFound, $"File not found: {source}");
+        }
+
+        string tempPath = outputPath + ".modit-tmp";
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+            var request = new ImagesToPdfRequest(
+                sources, tempPath, imageOptions.PageSize.ToString().ToLowerInvariant(), imageOptions.MarginPt, imageOptions.VectorDpi);
+            await _engine.ImagesToPdfAsync(request, cancellationToken).ConfigureAwait(false);
+
+            DocumentInfo written = await GetInfoAsync(tempPath, null, cancellationToken).ConfigureAwait(false);
+            if (written.PageCount != sources.Length)
+            {
+                throw new ModitException(
+                    ErrorCode.PdfStructureOperationFailed,
+                    $"Verification failed: expected {sources.Length} pages but the output has {written.PageCount}.");
+            }
+
+            File.Move(tempPath, outputPath, options?.Overwrite == true);
+            long inputBytes = sources.Sum(s => new FileInfo(s).Length);
+            return new PdfOperationResult(outputPath, written.PageCount, [], inputBytes, written.FileSizeBytes);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            throw new ModitException(ErrorCode.OutputWriteFailed, $"Could not write {outputPath}: {ex.Message}", ex);
+        }
+        finally
+        {
+            TryDelete(tempPath);
+        }
     }
 
     /// <summary>Renders the selected pages to PNG files named <c>&lt;name&gt;_p001.png</c> ...</summary>

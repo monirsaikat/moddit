@@ -4,6 +4,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Modit.App.ViewModels;
 using Modit.Core;
+using Modit.Core.Convert;
 using Modit.Core.Logging;
 using Modit.Core.Pdf;
 using Modit.Core.Policy;
@@ -35,6 +36,7 @@ internal static class AppHost
         // The host process starts lazily on the first document, never during app startup.
         services.AddSingleton(_ => new EngineClient());
         services.AddSingleton<PdfService>();
+        services.AddSingleton<ImageConvertService>();
         services.AddSingleton<IUiDispatcher>(new UiDispatcher(dispatcherQueue));
         services.AddSingleton<IStringProvider, ResourceStrings>();
         services.AddTransient<SettingsViewModel>();

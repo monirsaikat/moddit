@@ -27,8 +27,8 @@
             <Border Style="{StaticResource SettingsCardStyle}">
                 <StackPanel Spacing="12">
                     <TextBlock
-                        x:Uid="ToolFilesEmpty"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="{x:Bind ViewModel.EmptyFilesText}"
                         TextWrapping="Wrap"
                         Visibility="{x:Bind local:ToolPage.Not(ViewModel.HasFiles), Mode=OneWay}" />
 
@@ -49,7 +49,7 @@
                                         VerticalAlignment="Center"
                                         AutomationProperties.AccessibilityView="Raw"
                                         FontSize="20"
-                                        Glyph="&#xEA90;" />
+                                        Glyph="{x:Bind Glyph}" />
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Text="{x:Bind Name}" TextTrimming="CharacterEllipsis" />
                                         <TextBlock
@@ -98,8 +98,8 @@
                     </ItemsRepeater>
 
                     <Button
-                        x:Uid="ToolAddFiles"
                         Click="OnAddFilesClick"
+                        Content="{x:Bind ViewModel.AddFilesLabel}"
                         IsEnabled="{x:Bind ViewModel.CanAddFiles, Mode=OneWay}" />
                 </StackPanel>
             </Border>
@@ -156,7 +156,76 @@
                         Visibility="{x:Bind ViewModel.ShowDpi}"
                         Value="{x:Bind ViewModel.Dpi, Mode=TwoWay}" />
 
-                    <PasswordBox x:Uid="ToolInputPassword" Password="{x:Bind ViewModel.InputPassword, Mode=TwoWay}" />
+                    <ComboBox
+                        x:Uid="ToolTargetFormat"
+                        MinWidth="260"
+                        ItemsSource="{x:Bind ViewModel.TargetFormatNames}"
+                        SelectedIndex="{x:Bind ViewModel.TargetFormatIndex, Mode=TwoWay}"
+                        Visibility="{x:Bind ViewModel.ShowTargetFormat}" />
+
+                    <CheckBox
+                        x:Uid="ToolLossless"
+                        IsChecked="{x:Bind ViewModel.Lossless, Mode=TwoWay}"
+                        Visibility="{x:Bind ViewModel.ShowLossless, Mode=OneWay}" />
+
+                    <Slider
+                        x:Uid="ToolQuality"
+                        MaxWidth="360"
+                        HorizontalAlignment="Left"
+                        Maximum="100"
+                        Minimum="1"
+                        StepFrequency="1"
+                        Visibility="{x:Bind ViewModel.ShowQuality, Mode=OneWay}"
+                        Value="{x:Bind ViewModel.Quality, Mode=TwoWay}" />
+
+                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.ShowResize}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <NumberBox
+                                x:Uid="ToolMaxWidth"
+                                Maximum="100000"
+                                Minimum="0"
+                                SpinButtonPlacementMode="Compact"
+                                Value="{x:Bind ViewModel.MaxWidth, Mode=TwoWay}" />
+                            <NumberBox
+                                x:Uid="ToolMaxHeight"
+                                Maximum="100000"
+                                Minimum="0"
+                                SpinButtonPlacementMode="Compact"
+                                Value="{x:Bind ViewModel.MaxHeight, Mode=TwoWay}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Uid="ToolResizeHint"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{ThemeResource CaptionTextBlockStyle}"
+                            TextWrapping="Wrap" />
+                        <CheckBox
+                            x:Uid="ToolStripMetadata"
+                            Margin="0,8,0,0"
+                            IsChecked="{x:Bind ViewModel.StripMetadata, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.ShowPageLayout}">
+                        <ComboBox
+                            x:Uid="ToolPageSize"
+                            MinWidth="260"
+                            SelectedIndex="{x:Bind ViewModel.PageSizeIndex, Mode=TwoWay}">
+                            <ComboBoxItem x:Uid="ToolPageSizeImage" />
+                            <ComboBoxItem x:Uid="ToolPageSizeA4" />
+                            <ComboBoxItem x:Uid="ToolPageSizeLetter" />
+                        </ComboBox>
+                        <NumberBox
+                            x:Uid="ToolMargin"
+                            HorizontalAlignment="Left"
+                            Maximum="100"
+                            Minimum="0"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{x:Bind ViewModel.MarginMm, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <PasswordBox
+                        x:Uid="ToolInputPassword"
+                        Password="{x:Bind ViewModel.InputPassword, Mode=TwoWay}"
+                        Visibility="{x:Bind ViewModel.ShowInputPassword}" />
                 </StackPanel>
             </Border>
 

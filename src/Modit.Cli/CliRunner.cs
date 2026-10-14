@@ -11,8 +11,20 @@ namespace Modit.Cli;
 /// </summary>
 internal static class CliRunner
 {
+    public static Task<int> RunAsync(
+        ParseResult parseResult, Func<EngineClient, bool, Task> body, CancellationToken cancellationToken) =>
+        RunAsync(
+            parseResult,
+            async (engine, json) =>
+            {
+                await body(engine, json).ConfigureAwait(false);
+                return ExitCodes.Ok;
+            },
+            cancellationToken);
+
+    /// <summary>For commands that decide their own exit code, such as a batch with some failures.</summary>
     public static async Task<int> RunAsync(
-        ParseResult parseResult, Func<EngineClient, bool, Task> body, CancellationToken cancellationToken)
+        ParseResult parseResult, Func<EngineClient, bool, Task<int>> body, CancellationToken cancellationToken)
     {
         bool json = parseResult.GetValue(CliOptions.Json);
         try
@@ -20,10 +32,8 @@ internal static class CliRunner
             var client = new EngineClient();
             await using (client.ConfigureAwait(false))
             {
-                await body(client, json).ConfigureAwait(false);
+                return await body(client, json).ConfigureAwait(false);
             }
-
-            return ExitCodes.Ok;
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -76,6 +86,20 @@ internal sealed record PdfRenderOutput(string Output, int Page, int WidthPx, int
 
 internal sealed record PdfTextOutput(int Page, string Text);
 
+internal sealed record ConvertItemOutput(
+    string Input,
+    string? Output,
+    string Status,
+    string? Error,
+    string? Message,
+    int Width,
+    int Height,
+    long InputBytes,
+    long OutputBytes,
+    IReadOnlyList<string>? Warnings);
+
+internal sealed record ConvertOutput(int Converted, int Skipped, int Failed, IReadOnlyList<ConvertItemOutput> Items);
+
 [JsonSourceGenerationOptions(
     WriteIndented = true,
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
@@ -85,5 +109,6 @@ internal sealed record PdfTextOutput(int Page, string Text);
 [JsonSerializable(typeof(PdfWriteOutput))]
 [JsonSerializable(typeof(PdfRenderOutput))]
 [JsonSerializable(typeof(PdfFilesOutput))]
+[JsonSerializable(typeof(ConvertOutput))]
 [JsonSerializable(typeof(IReadOnlyList<PdfTextOutput>))]
 internal sealed partial class CliJsonContext : JsonSerializerContext;

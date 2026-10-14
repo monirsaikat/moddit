@@ -22,6 +22,15 @@ public interface IEngineService
     /// <summary>Runs a QPDF job described by QPDF job JSON (merge, split, encrypt, linearize, check).</summary>
     Task<QpdfJobResult> RunQpdfJobAsync(string jobJson, CancellationToken cancellationToken);
 
+    /// <summary>Reads the header of an image file (any format the converters accept).</summary>
+    Task<ImageInfoResult> GetImageInfoAsync(string path, CancellationToken cancellationToken);
+
+    /// <summary>Converts one image with libvips (and the Windows codecs for BMP, ICO and HEIC).</summary>
+    Task<ImageConvertResult> ConvertImageAsync(ImageConvertRequest request, CancellationToken cancellationToken);
+
+    /// <summary>Writes a PDF with one image per page. JPEG files are embedded unchanged.</summary>
+    Task<ImagesToPdfResult> ImagesToPdfAsync(ImagesToPdfRequest request, CancellationToken cancellationToken);
+
     /// <summary>Test hook: terminates the host abruptly to exercise crash recovery.</summary>
     Task CrashAsync(CancellationToken cancellationToken);
 }

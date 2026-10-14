@@ -63,3 +63,55 @@ public sealed record QpdfJobResult(
     [property: Key(1)] IReadOnlyList<string> Warnings,
     [property: Key(2)] IReadOnlyList<string> Errors,
     [property: Key(3)] string Output);
+
+[MessagePackObject]
+public sealed record ImageInfoResult(
+    [property: Key(0)] string Format,
+    [property: Key(1)] int Width,
+    [property: Key(2)] int Height,
+    [property: Key(3)] int Bands,
+    [property: Key(4)] bool HasAlpha,
+    [property: Key(5)] int Frames,
+    [property: Key(6)] double Dpi);
+
+/// <summary>
+/// Converts one image file. <see cref="OutputPath"/> is written as-is; the caller owns naming, collisions and
+/// the temporary-file dance. Sizes are in pixels; 0 means "no limit". Images are only ever made smaller,
+/// except vector input, which is rendered at whatever size fits the limits.
+/// </summary>
+[MessagePackObject]
+public sealed record ImageConvertRequest(
+    [property: Key(0)] string InputPath,
+    [property: Key(1)] string OutputPath,
+    [property: Key(2)] string TargetFormat,
+    [property: Key(3)] int Quality,
+    [property: Key(4)] bool Lossless,
+    [property: Key(5)] int MaxWidthPx,
+    [property: Key(6)] int MaxHeightPx,
+    [property: Key(7)] bool KeepMetadata,
+    [property: Key(8)] string Background,
+    [property: Key(9)] double VectorDpi,
+    [property: Key(10)] bool KeepAnimation);
+
+[MessagePackObject]
+public sealed record ImageConvertResult(
+    [property: Key(0)] int Width,
+    [property: Key(1)] int Height,
+    [property: Key(2)] int Frames,
+    [property: Key(3)] long OutputBytes,
+    [property: Key(4)] IReadOnlyList<string> Warnings);
+
+/// <summary>Builds a PDF with one image per page. <see cref="PageSize"/>: <c>image</c>, <c>a4</c> or <c>letter</c>.</summary>
+[MessagePackObject]
+public sealed record ImagesToPdfRequest(
+    [property: Key(0)] IReadOnlyList<string> InputPaths,
+    [property: Key(1)] string OutputPath,
+    [property: Key(2)] string PageSize,
+    [property: Key(3)] double MarginPt,
+    [property: Key(4)] double VectorDpi);
+
+[MessagePackObject]
+public sealed record ImagesToPdfResult(
+    [property: Key(0)] int PageCount,
+    [property: Key(1)] long OutputBytes,
+    [property: Key(2)] int PassthroughJpegs);

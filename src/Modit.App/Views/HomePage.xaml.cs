@@ -19,9 +19,9 @@ public sealed partial class HomePage : Page
         _settings = App.Services.GetRequiredService<ISettingsService>();
         IStringProvider strings = App.Services.GetRequiredService<IStringProvider>();
 
-        ToolTiles.ItemsSource = ToolCatalog.Order
-            .Select(k => new ToolTile(k, ToolCatalog.Glyph(k), strings.Get($"Tool{k}Title"), strings.Get($"Tool{k}Description")))
-            .ToList();
+        ToolTile Tile(ToolKind k) => new(k, ToolCatalog.Glyph(k), strings.Get($"Tool{k}Title"), strings.Get($"Tool{k}Description"));
+        ToolTiles.ItemsSource = ToolCatalog.PdfTools.Select(Tile).ToList();
+        ConvertTiles.ItemsSource = ToolCatalog.ConvertTools.Select(Tile).ToList();
 
         if (_settings.Current.FirstRunCompletedAt is null)
         {

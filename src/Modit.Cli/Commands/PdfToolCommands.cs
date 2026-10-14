@@ -23,6 +23,7 @@ internal static partial class PdfCommands
         pdf.Subcommands.Add(Unlock());
         pdf.Subcommands.Add(Optimize());
         pdf.Subcommands.Add(Images());
+        pdf.Subcommands.Add(ConvertCommands.FromImages());
     }
 
     private static Command Split()

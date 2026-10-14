@@ -64,6 +64,9 @@ mem to 64 MB per host.
 
 ## ADR-006 Vector: resvg for SVG rasterization — LOCKED
 
+> Implementation note (2026-10-14): until resvg is built in CI, SVG input is rendered by librsvg inside the
+> libvips bundle. See `docs/adr/0003-image-conversion-deviations.md`; owner approval pending.
+
 Options: resvg (MIT, C API); librsvg (via libvips); Svg.Skia; WebView2.
 Decision: resvg for SVG→raster (best conformance, fast, tiny). WebView2 `PrintToPdf` for SVG→PDF (vector kept).
 Consequences: bind `resvg.h` in `Modit.Native.Resvg`; prebuilt DLLs from resvg releases; fonts via system

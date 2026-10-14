@@ -66,6 +66,10 @@ missing pack shows an inline "Install X (350 MB)" card instead of a dead end.
 
 ### Raster images (`Modit.Convert.Images`)
 
+> Status (0.3.0): implemented as `Modit.Core.Convert.ImageConvertService` + host `ImageEngine`, with the
+> deviations in `docs/adr/0003-image-conversion-deviations.md` (BMP/ICO via WIC and own writers, SVG via librsvg,
+> no JXL/PSD/TGA, no registry or options schema yet).
+
 - Engine: NetVips in a batch host. Streaming (`Image.NewFromFile(..., access: Access.Sequential)` where format
   allows). Per-op thread pool 2; parallelism across files handled by scheduler.
 - Supported inputs: PNG, JPEG, WebP, AVIF, HEIC/HEIF (libheif or WIC), GIF (animated → frames), TIFF (multi-page),

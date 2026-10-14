@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.Storage.Pickers;
 using Modit.App.ViewModels;
 using Modit.App.Views;
+using Modit.Core.Convert;
 using Modit.Core.Pdf;
 using Modit.Core.Settings;
 using Modit.Engine.Client;
@@ -92,7 +93,11 @@ public sealed partial class MainWindow : Window
             return (ToolPage)existing.Content;
         }
 
-        var viewModel = new ToolViewModel(kind, App.Services.GetRequiredService<PdfService>(), _strings);
+        var viewModel = new ToolViewModel(
+            kind,
+            App.Services.GetRequiredService<PdfService>(),
+            App.Services.GetRequiredService<ImageConvertService>(),
+            _strings);
         var toolPage = new ToolPage(viewModel);
         var tab = new TabViewItem
         {
@@ -216,22 +221,22 @@ public sealed partial class MainWindow : Window
         }
 
         IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
-        List<string> paths =
-        [
-            .. items
-                .OfType<StorageFile>()
-                .Where(f => string.Equals(f.FileType, ".pdf", StringComparison.OrdinalIgnoreCase))
-                .Select(f => f.Path),
-        ];
+        List<string> paths = [.. items.OfType<StorageFile>().Select(f => f.Path)];
+        List<string> pdfs = [.. paths.Where(p => string.Equals(Path.GetExtension(p), ".pdf", StringComparison.OrdinalIgnoreCase))];
+        List<string> images = [.. paths.Where(ImageFormats.IsInput)];
 
-        // Dropped on a tool, files become its input; anywhere else they open for reading.
+        // Dropped on a tool, files become its input (the tool keeps what it can use).
+        // Anywhere else PDFs open for reading, and images open in the image converter.
         if (Tabs.SelectedItem is TabViewItem { Content: ToolPage toolPage })
         {
             toolPage.ViewModel.AddFiles(paths);
+            return;
         }
-        else
+
+        OpenFiles(pdfs);
+        if (images.Count > 0)
         {
-            OpenFiles(paths);
+            OpenTool(ToolKind.ConvertImages).ViewModel.AddFiles(images);
         }
     }
 

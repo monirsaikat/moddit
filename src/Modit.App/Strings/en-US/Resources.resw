@@ -89,8 +89,6 @@
   <data name="ToolImagesTitle" xml:space="preserve"><value>PDF to images</value></data>
   <data name="ToolImagesDescription" xml:space="preserve"><value>Save pages as PNG pictures at the resolution you choose.</value></data>
   <data name="ToolFilesHeader.Text" xml:space="preserve"><value>Files</value></data>
-  <data name="ToolFilesEmpty.Text" xml:space="preserve"><value>Add a PDF here, or drop it anywhere in this window.</value></data>
-  <data name="ToolAddFiles.Content" xml:space="preserve"><value>Add PDF…</value></data>
   <data name="ToolFilePages.PlaceholderText" xml:space="preserve"><value>All pages</value></data>
   <data name="ToolFilePages.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Pages to take from this file</value></data>
   <data name="ToolFilePages.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Pages to take from this file, for example 1-3,7</value></data>
@@ -147,4 +145,29 @@
   <data name="ZoomFitButton.Content" xml:space="preserve"><value>Fit width</value></data>
   <data name="ZoomResetButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Actual size</value></data>
   <data name="ZoomResetButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Actual size (Ctrl+0)</value></data>
+  <data name="HomeConvertHeader.Text" xml:space="preserve"><value>Convert</value></data>
+  <data name="ToolConvertImagesTitle" xml:space="preserve"><value>Convert images</value></data>
+  <data name="ToolConvertImagesDescription" xml:space="preserve"><value>Change pictures to PNG, JPEG, WebP, AVIF, TIFF, GIF, BMP or ICO. SVG and HEIC work as input too.</value></data>
+  <data name="ToolImagesToPdfTitle" xml:space="preserve"><value>Images to PDF</value></data>
+  <data name="ToolImagesToPdfDescription" xml:space="preserve"><value>Put photos and pictures into one PDF, one per page, in the order you choose.</value></data>
+  <data name="ToolAddPdf" xml:space="preserve"><value>Add PDF…</value></data>
+  <data name="ToolAddImages" xml:space="preserve"><value>Add images…</value></data>
+  <data name="ToolFilesEmptyPdf" xml:space="preserve"><value>Add a PDF here, or drop it anywhere in this window.</value></data>
+  <data name="ToolFilesEmptyImages" xml:space="preserve"><value>Add images here, or drop them anywhere in this window.</value></data>
+  <data name="ToolTargetFormat.Header" xml:space="preserve"><value>Convert to</value></data>
+  <data name="ToolQuality.Header" xml:space="preserve"><value>Quality</value></data>
+  <data name="ToolLossless.Content" xml:space="preserve"><value>Lossless: no quality loss, larger files</value></data>
+  <data name="ToolMaxWidth.Header" xml:space="preserve"><value>Largest width (px)</value></data>
+  <data name="ToolMaxHeight.Header" xml:space="preserve"><value>Largest height (px)</value></data>
+  <data name="ToolResizeHint.Text" xml:space="preserve"><value>Leave at 0 to keep the original size. Pictures are only made smaller; SVG drawings are drawn at the size you ask for.</value></data>
+  <data name="ToolStripMetadata.Content" xml:space="preserve"><value>Remove metadata such as camera details and GPS location</value></data>
+  <data name="ToolPageSize.Header" xml:space="preserve"><value>Page size</value></data>
+  <data name="ToolPageSizeImage.Content" xml:space="preserve"><value>Same as each image</value></data>
+  <data name="ToolPageSizeA4.Content" xml:space="preserve"><value>A4</value></data>
+  <data name="ToolPageSizeLetter.Content" xml:space="preserve"><value>Letter</value></data>
+  <data name="ToolMargin.Header" xml:space="preserve"><value>Margin (mm)</value></data>
+  <data name="ToolConvertDone" xml:space="preserve"><value>{0} images converted.</value></data>
+  <data name="ToolConvertSomeFailed" xml:space="preserve"><value>{0} could not be converted. First problem: {1}</value></data>
+  <data name="ToolErrorNotAnImage" xml:space="preserve"><value>This file is not an image Modit can read.</value></data>
+  <data name="ToolErrorImageDamaged" xml:space="preserve"><value>This image is damaged or uses a feature Modit cannot read.</value></data>
 </root>

@@ -30,7 +30,8 @@ $dataRoot = "$InstallDir-data"
 function Get-InstalledVersion {
     $cli = Join-Path $InstallDir 'current\modit.exe'
     if (-not (Test-Path $cli)) { return $null }
-    try { return (& $cli --version 2>$null | Select-Object -First 1).Trim() } catch { return $null }
+    # "modit --version" prints SemVer build metadata ("0.3.0+<commit>"); compare the version part only.
+    try { return (& $cli --version 2>$null | Select-Object -First 1).Trim().Split('+')[0] } catch { return $null }
 }
 
 function Stop-Modit {

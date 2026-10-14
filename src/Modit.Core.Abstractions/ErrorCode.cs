@@ -42,6 +42,12 @@ public enum ErrorCode
     // 6xx: install/update
     UpdateFailed = 600,
     UpdateSignatureInvalid = 601,
+
+    // 7xx: conversion
+    ConvertUnsupportedFormat = 700,
+    ConvertInputCorrupt = 701,
+    ConvertCodecMissing = 702,
+    ConvertFailed = 703,
 }
 
 /// <summary>CLI process exit codes (docs/plan/05, "CLI mapping").</summary>

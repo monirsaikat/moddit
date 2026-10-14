@@ -12,6 +12,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="StreamJsonRpc" />
+    <PackageReference Include="NetVips" />
+    <PackageReference Include="NetVips.Native.win-x64" Condition="'$(Platform)' != 'ARM64'" />
+    <PackageReference Include="NetVips.Native.win-arm64" Condition="'$(Platform)' == 'ARM64'" />
     <ProjectReference Include="..\Modit.Engine.Contracts\Modit.Engine.Contracts.csproj" />
     <ProjectReference Include="..\Modit.Native.Pdfium\Modit.Native.Pdfium.csproj" />
     <ProjectReference Include="..\Modit.Native.Qpdf\Modit.Native.Qpdf.csproj" />

@@ -10,6 +10,7 @@ internal static class Program
         var root = new RootCommand("Modit: view, merge, edit and convert PDFs and other files from the command line.");
         root.Options.Add(CliOptions.Json);
         root.Subcommands.Add(PdfCommands.Build());
+        root.Subcommands.Add(ConvertCommands.Build());
 
         ParseResult parseResult = root.Parse(args);
         if (parseResult.Errors.Count > 0)

@@ -149,6 +149,15 @@ public sealed class EngineClient : IAsyncDisposable
     public Task<QpdfJobResult> RunQpdfJobAsync(string jobJson, CancellationToken cancellationToken = default) =>
         InvokeAsync((service, ct) => service.RunQpdfJobAsync(jobJson, ct), cancellationToken);
 
+    public Task<ImageInfoResult> GetImageInfoAsync(string path, CancellationToken cancellationToken = default) =>
+        InvokeAsync((service, ct) => service.GetImageInfoAsync(Path.GetFullPath(path), ct), cancellationToken);
+
+    public Task<ImageConvertResult> ConvertImageAsync(ImageConvertRequest request, CancellationToken cancellationToken = default) =>
+        InvokeAsync((service, ct) => service.ConvertImageAsync(request, ct), cancellationToken);
+
+    public Task<ImagesToPdfResult> ImagesToPdfAsync(ImagesToPdfRequest request, CancellationToken cancellationToken = default) =>
+        InvokeAsync((service, ct) => service.ImagesToPdfAsync(request, ct), cancellationToken);
+
     /// <summary>Test hook: kills the current host abruptly. The next call restarts it.</summary>
     public async Task CrashHostForTestingAsync()
     {

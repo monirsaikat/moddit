@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Storage.Pickers;
 using Modit.App.ViewModels;
+using Modit.Core.Convert;
 
 namespace Modit.App.Views;
 
@@ -58,7 +59,10 @@ public sealed partial class ToolPage : Page
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
             ViewMode = PickerViewMode.List,
         };
-        picker.FileTypeFilter.Add(".pdf");
+        foreach (string extension in ViewModel.AcceptsImages ? ImageFormats.InputExtensions : [".pdf"])
+        {
+            picker.FileTypeFilter.Add(extension);
+        }
 
         if (ViewModel.AllowsMultipleFiles)
         {
@@ -125,7 +129,7 @@ public sealed partial class ToolPage : Page
         ((FrameworkElement)sender).Visibility = ViewModel.ShowPerFilePages ? Visibility.Visible : Visibility.Collapsed;
 
     private void OnReorderButtonLoaded(object sender, RoutedEventArgs e) =>
-        ((FrameworkElement)sender).Visibility = ViewModel.AllowsMultipleFiles ? Visibility.Visible : Visibility.Collapsed;
+        ((FrameworkElement)sender).Visibility = ViewModel.ShowReorder ? Visibility.Visible : Visibility.Collapsed;
 
     private void OnOpenResultClick(object sender, RoutedEventArgs e)
     {
@@ -134,10 +138,19 @@ public sealed partial class ToolPage : Page
             return;
         }
 
-        if (File.Exists(path))
+        if (File.Exists(path) && string.Equals(Path.GetExtension(path), ".pdf", StringComparison.OrdinalIgnoreCase))
         {
             // A PDF result opens in a Modit tab; that is what the user just made.
             App.MainWindow.OpenFiles([path]);
+        }
+        else if (File.Exists(path))
+        {
+            // Other files: show them selected in File Explorer.
+            using Process? explorer = Process.Start(new ProcessStartInfo("explorer.exe")
+            {
+                ArgumentList = { "/select," + path },
+                UseShellExecute = false,
+            });
         }
         else if (Directory.Exists(path))
         {
