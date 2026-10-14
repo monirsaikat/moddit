@@ -116,7 +116,7 @@ jobs:
           $setup = Get-ChildItem $channelDir -Filter "*Setup.exe" | Select-Object -First 1
           $dir = Join-Path $env:RUNNER_TEMP "modit-fresh"
           Start-Process $setup.FullName -ArgumentList "--silent", "--installto", "`"$dir`"" -Wait
-          $version = (& "$dir\current\modit.exe" --version).Trim()
+          $version = (& "$dir\current\modit.exe" --version).Trim().Split('+')[0]   # drop "+commit" metadata
           if ($version -ne "${{ needs.build.outputs.version }}") { throw "Installed $version, expected ${{ needs.build.outputs.version }}" }
           Start-Process "$dir\Update.exe" -ArgumentList "uninstall", "--silent" -Wait
 
