@@ -64,10 +64,19 @@ context menu.
 
 Details and limits: `docs/adr/0004-page-editing-tools.md`.
 
+## Releases on GitHub (0.4.2 to 0.4.4)
+
+- `release.yml` publishes to https://github.com/monirsaikat/modit-releases. 0.4.2, 0.4.3 and 0.4.4 were
+  released by tag. Each release has x64 and ARM64 setups, portable zips and the update feeds.
+- Checked on a real machine: an installed 0.4.2 updated itself from GitHub to 0.4.3, then to 0.4.4, and
+  restarted each time. Settings were kept.
+- 0.4.4 moves user data to `%LOCALAPPDATA%\ModitData` (ADR 0005). Setup and uninstall had been deleting it.
+- Installers built before 0.4.2 point at the old placeholder feed and cannot update. Install 0.4.2 or later once.
+
 ## What the owner must provide before a real release
 
-1. A GitHub organization and two repositories: private source, public releases (plan 13 Q16). Then set
-   `vars.RELEASES_REPO` and `secrets.RELEASES_REPO_TOKEN`, and change `UpdateDefaults.ReleasesRepositoryUrl`.
+1. Done: source repo `monirsaikat/moddit`, public releases repo `monirsaikat/modit-releases`, workflow variable
+   and secret set. Replace the secret with a fine-grained PAT (contents:write on the releases repo only).
 2. An Azure Trusted Signing account, or another code-signing certificate. Until then installers are unsigned
    and Windows SmartScreen will warn users.
 3. Answers to plan 13 Q1 (name and publisher) and Q2 (licensing model).
