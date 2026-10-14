@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Include="..\Shared\TestPdf.cs" Link="Shared\TestPdf.cs" />
+    <Compile Include="..\Shared\TestDirectory.cs" Link="Shared\TestDirectory.cs" />
     <ProjectReference Include="..\..\src\Modit.Core\Modit.Core.csproj" />
     <ProjectReference Include="..\..\src\Modit.Update\Modit.Update.csproj" />
     <ProjectReference Include="..\..\src\Modit.App.ViewModels\Modit.App.ViewModels.csproj" />

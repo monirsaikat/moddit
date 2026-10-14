@@ -4,6 +4,8 @@ using Modit.Core.Pdf;
 using Modit.Engine;
 using Modit.Engine.Client;
 
+using Modit.TestSupport;
+
 namespace Modit.Core.Tests;
 
 public sealed class ImageConvertTests : IAsyncLifetime
@@ -25,7 +27,7 @@ public sealed class ImageConvertTests : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         await _engine.DisposeAsync();
-        Directory.Delete(_dir, recursive: true);
+        TestDirectory.Delete(_dir);
     }
 
     [Theory]

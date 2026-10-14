@@ -20,7 +20,7 @@ public sealed class PdfToolsTests : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         await _engine.DisposeAsync();
-        Directory.Delete(_dir, recursive: true);
+        TestDirectory.Delete(_dir);
     }
 
     [Fact]

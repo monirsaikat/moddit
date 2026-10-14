@@ -24,7 +24,7 @@ public sealed class OrganizeViewModelTests : IAsyncLifetime
     {
         await _model.DisposeAsync();
         await _engine.DisposeAsync();
-        Directory.Delete(_dir, recursive: true);
+        TestDirectory.Delete(_dir);
     }
 
     [Fact]

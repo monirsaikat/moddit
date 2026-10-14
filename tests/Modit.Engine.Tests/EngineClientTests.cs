@@ -20,14 +20,7 @@ public sealed class EngineClientTests : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         await _client.DisposeAsync();
-        try
-        {
-            Directory.Delete(_dir, recursive: true);
-        }
-        catch (IOException)
-        {
-            // Best effort cleanup.
-        }
+        TestDirectory.Delete(_dir);
     }
 
     [Fact]

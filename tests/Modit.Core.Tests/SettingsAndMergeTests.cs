@@ -11,7 +11,7 @@ public sealed class SettingsServiceTests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "modit-tests", Guid.NewGuid().ToString("N"));
 
-    public void Dispose() => Directory.Delete(_dir, recursive: true);
+    public void Dispose() => TestDirectory.Delete(_dir);
 
     [Fact]
     public void Defaults_apply_when_no_file_exists_and_updates_persist()
@@ -107,7 +107,7 @@ public sealed class PdfServiceMergeTests : IAsyncLifetime
     public async ValueTask DisposeAsync()
     {
         await _engine.DisposeAsync();
-        Directory.Delete(_dir, recursive: true);
+        TestDirectory.Delete(_dir);
     }
 
     [Fact]
