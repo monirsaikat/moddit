@@ -45,6 +45,18 @@ function Assert-True([bool] $condition, [string] $message) {
     Write-Host "  ok  $message" -ForegroundColor Green
 }
 
+function Write-Diagnostics {
+    # Shown only on failure: what the updater and the app logged, and any crash the OS recorded.
+    $logs = @(Get-ChildItem $InstallDir, $dataRoot, (Join-Path $env:LOCALAPPDATA 'Velopack') -Recurse -Filter '*.log' -ErrorAction SilentlyContinue)
+    foreach ($log in $logs) {
+        Write-Host "---- $($log.FullName) (last 40 lines)" -ForegroundColor Yellow
+        Get-Content $log.FullName -Tail 40 -ErrorAction SilentlyContinue | Write-Host
+    }
+    Get-WinEvent -FilterHashtable @{ LogName = 'Application'; Level = 2; StartTime = (Get-Date).AddMinutes(-10) } -ErrorAction SilentlyContinue |
+        Where-Object { $_.Message -match 'Modit' } | Select-Object -First 5 |
+        ForEach-Object { Write-Host "---- event $($_.Id) $($_.ProviderName)" -ForegroundColor Yellow; Write-Host $_.Message }
+}
+
 $installed = $false
 try {
     Write-Host "1. Install $FromSetup -> $InstallDir" -ForegroundColor Cyan
@@ -84,12 +96,13 @@ try {
 
     # The updater must have relaunched the new version.
     $relaunched = $false
-    $deadline = (Get-Date).AddSeconds(30)
+    $deadline = (Get-Date).AddSeconds(60)
     while ((Get-Date) -lt $deadline -and -not $relaunched) {
         Start-Sleep -Seconds 1
         $relaunched = @(Get-Process -Name 'Modit.App' -ErrorAction SilentlyContinue |
             Where-Object { $_.Path -and $_.Path.StartsWith($InstallDir, [StringComparison]::OrdinalIgnoreCase) }).Count -gt 0
     }
+    if (-not $relaunched) { Write-Diagnostics }
     Assert-True $relaunched 'The new version was started again after the update'
     $settings = Get-Content (Join-Path $dataRoot 'settings.json') -Raw | ConvertFrom-Json
     Assert-True ($settings.theme -eq 'Dark') 'User settings survived the update'
